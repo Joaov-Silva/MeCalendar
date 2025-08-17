@@ -30,8 +30,8 @@ Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL,
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/sistema-agendamento.git
-   cd sistema-agendamento
+   git clone https://github.com/Nicolas-Pierini/ProAgenda.git
+   cd ProAgenda
    ```
 
 2. **Configure o banco de dados**
