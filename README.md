@@ -63,7 +63,7 @@ O sistema utiliza as seguintes tabelas principais:
 ### Para Clientes
 - Cadastro e login
 - Busca de serviços por categoria e localização
-- Visualização de estabelecimentos
+- Visualização de seus agendamentos
 - Sistema de agendamentos
 
 ### Para Profissionais
