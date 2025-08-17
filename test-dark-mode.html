@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Dark Mode</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .test-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+        .test-section h3 {
+            margin-bottom: 1rem;
+        }
+        .color-test {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .color-box {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Teste do Dark Mode</h1>
+        
+        <!-- Botão Dark Mode -->
+        <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
+            <i class="fas fa-moon" id="darkModeIcon"></i>
+        </button>
+        
+        <div class="test-section">
+            <h3>Teste de Background</h3>
+            <p>Esta seção deve ter background escuro no modo dark.</p>
+            <div class="color-test">
+                <div class="color-box" style="background: #111827;">#111827</div>
+                <div class="color-box" style="background: #1f2937;">#1f2937</div>
+                <div class="color-box" style="background: #374151;">#374151</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Teste de Texto</h3>
+            <p>Este texto deve ser branco no modo dark.</p>
+            <p style="color: #d1d5db;">Este texto deve ser cinza claro no modo dark.</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>Teste de Botões</h3>
+            <button class="btn btn-primary">Botão Primário</button>
+            <button class="btn btn-outline">Botão Outline</button>
+            <button class="btn btn-secondary">Botão Secundário</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Teste de Formulário</h3>
+            <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" placeholder="Digite seu nome">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" placeholder="Digite seu email">
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Estado do Dark Mode</h3>
+            <p>Dark Mode ativo: <span id="darkModeStatus">Não</span></p>
+            <p>Classe aplicada: <span id="bodyClass">Nenhuma</span></p>
+        </div>
+    </div>
+    
+    <script src="dark-mode.js"></script>
+    <script>
+        // Atualiza o status do dark mode
+        function updateStatus() {
+            const isActive = window.darkModeManager ? window.darkModeManager.isActive() : false;
+            const bodyClass = document.body.className;
+            
+            document.getElementById('darkModeStatus').textContent = isActive ? 'Sim' : 'Não';
+            document.getElementById('bodyClass').textContent = bodyClass || 'Nenhuma';
+        }
+        
+        // Atualiza o status quando o dark mode mudar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            
+            // Observa mudanças na classe do body
+            const observer = new MutationObserver(updateStatus);
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        });
+    </script>
+</body>
+</html>

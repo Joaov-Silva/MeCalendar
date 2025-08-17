@@ -176,5 +176,8 @@ require_once 'config.php';
     <?php include 'footer.php'; ?>
 
     <script src="script.js"></script>
+    
+    <!-- Inclui o gerenciador de dark mode -->
+    <script src="dark-mode.js"></script>
 </body>
 </html>

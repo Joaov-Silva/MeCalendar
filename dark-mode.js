@@ -41,11 +41,13 @@ class DarkModeManager {
             if (this.darkModeIcon) {
                 this.darkModeIcon.className = 'fas fa-sun';
             }
+            console.log('Dark mode ativado - Classe aplicada:', this.body.className);
         } else {
             this.body.classList.remove('dark-mode');
             if (this.darkModeIcon) {
                 this.darkModeIcon.className = 'fas fa-moon';
             }
+            console.log('Dark mode desativado - Classe aplicada:', this.body.className);
         }
         
         // Adiciona efeito de transição suave
@@ -55,6 +57,34 @@ class DarkModeManager {
         setTimeout(() => {
             this.body.style.transition = '';
         }, 300);
+        
+        // Força a aplicação dos estilos
+        this.forceStyleApplication();
+    }
+    
+    forceStyleApplication() {
+        // Força a aplicação dos estilos CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            body.dark-mode {
+                background-color: #111827 !important;
+                color: #f9fafb !important;
+            }
+            body.dark-mode * {
+                transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            }
+        `;
+        
+        // Remove estilos anteriores se existirem
+        const existingStyle = document.getElementById('dark-mode-forced-styles');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+        
+        style.id = 'dark-mode-forced-styles';
+        document.head.appendChild(style);
+        
+        console.log('Estilos forçados aplicados');
     }
     
     savePreference() {
