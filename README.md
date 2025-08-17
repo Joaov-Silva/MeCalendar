@@ -13,7 +13,7 @@ Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL,
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Backend**: PHP 7.4+
+- **Backend**: PHP 7.4+, JS
 - **Banco de Dados**: MySQL
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Bibliotecas**: Font Awesome para ícones
