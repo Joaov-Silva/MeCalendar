@@ -1,0 +1,41 @@
+# Arquivos temporários
+*.tmp
+*.temp
+*.log
+
+# Arquivos de cache
+cache/
+tmp/
+
+# Arquivos de upload
+uploads/
+files/
+
+# Arquivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Arquivos de sessão
+sessions/
+
+# Arquivos de erro
+error_log
+access_log
+
+# Dependências (se usar Composer)
+vendor/
+composer.lock
+
+# Arquivos de build
+dist/
+build/

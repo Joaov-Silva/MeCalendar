@@ -1,0 +1,238 @@
+<?php
+    require_once 'config.php';
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Agendamento - Clientes</title>
+    <link rel="stylesheet" href="calendar.css">
+    <li0nk rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="logo-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <span class="logo-text">Sistema de Agendamento</span>
+                    </a>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Calendário</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-users"></i>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Relatórios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">João Silva</span>
+                        <span class="user-role">Barbeiro</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 class="page-title">Calendário</h1>
+                    <p class="page-subtitle">Gerencie seus agendamentos</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-plus"></i>
+                        Novo Agendamento
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Exportar
+                    </button>
+                </div>
+            </header>
+
+            <!-- Calendar Container -->
+            <div class="calendar-container">
+                <!-- Calendar Header -->
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="nav-btn" id="prevMonth">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 class="current-month" id="currentMonth">Janeiro 2025</h2>
+                        <button class="nav-btn" id="nextMonth">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-views">
+                        <button class="view-btn active" data-view="month">Mês</button>
+                        <button class="view-btn" data-view="week">Semana</button>
+                        <button class="view-btn" data-view="day">Dia</button>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid">
+                    <div class="calendar-weekdays">
+                        <div class="weekday">Dom</div>
+                        <div class="weekday">Seg</div>
+                        <div class="weekday">Ter</div>
+                        <div class="weekday">Qua</div>
+                        <div class="weekday">Qui</div>
+                        <div class="weekday">Sex</div>
+                        <div class="weekday">Sáb</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays">
+                        <!-- Days will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Details Panel -->
+            <div class="event-panel" id="eventPanel">
+                <div class="panel-header">
+                    <h3>Detalhes do Agendamento</h3>
+                    <button class="close-btn" id="closePanel">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="event-info">
+                        <div class="info-item">
+                            <label>Cliente:</label>
+                            <span id="eventClient">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Telefone:</label>
+                            <span id="eventPhone">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Serviço:</label>
+                            <span id="eventService">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Data:</label>
+                            <span id="eventDate">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Horário:</label>
+                            <span id="eventTime">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Status:</label>
+                            <span class="status-badge confirmed" id="eventStatus">Confirmado</span>
+                        </div>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-edit"></i>
+                            Editar
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-phone"></i>
+                            Ligar
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Event Modal -->
+    <div class="modal" id="newEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Novo Agendamento</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newEventForm">
+                    <div class="form-group">
+                        <label for="clientName">Nome do Cliente *</label>
+                        <input type="text" id="clientName" name="clientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">Telefone *</label>
+                        <input type="tel" id="clientPhone" name="clientPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceType">Serviço *</label>
+                        <select id="serviceType" name="serviceType" required>
+                            <option value="">Selecione um serviço</option>
+                            <option value="corte">Corte</option>
+                            <option value="barba">Barba</option>
+                            <option value="corte-barba">Corte + Barba</option>
+                            <option value="hidratacao">Hidratação</option>
+                            <option value="pigmentacao">Pigmentação</option>
+                            <option value="tratamento">Tratamento Capilar</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Data</label>
+                            <input type="date" id="eventDate" name="eventDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Horário</label>
+                            <input type="time" id="eventTime" name="eventTime" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventNotes">Observações</label>
+                        <textarea id="eventNotes" name="eventNotes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEvent">Cancelar</button>
+                <button class="btn btn-primary" id="saveEvent">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="calendar.js"></script>
+</body>
+</html>

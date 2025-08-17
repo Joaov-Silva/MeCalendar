@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Agendamento - Demonstração da API</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+        
+        .demo-section h3 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+        
+        .api-result {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-demo {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .btn-demo:hover {
+            background: #1d4ed8;
+        }
+        
+        .status {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .status.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+                        <h1><i class="fas fa-code"></i> Sistema de Agendamento - Demonstração da API</h1>
+                <p>Esta página demonstra como usar as APIs do Sistema de Agendamento. Certifique-se de que o servidor PHP está rodando.</p>
+        
+        <!-- GET APIs -->
+        <div class="demo-section">
+            <h3><i class="fas fa-download"></i> APIs GET</h3>
+            
+            <div class="form-group">
+                <button class="btn-demo" onclick="testGetAPI('users')">
+                    <i class="fas fa-users"></i> Buscar Usuários
+                </button>
+                <button class="btn-demo" onclick="testGetAPI('appointments')">
+                    <i class="fas fa-calendar"></i> Buscar Agendamentos
+                </button>
+                <button class="btn-demo" onclick="testGetAPI('stats')">
+                    <i class="fas fa-chart-bar"></i> Buscar Estatísticas
+                </button>
+            </div>
+            
+            <div id="get-result" class="api-result" style="display: none;"></div>
+        </div>
+        
+        <!-- POST APIs -->
+        <div class="demo-section">
+            <h3><i class="fas fa-upload"></i> APIs POST</h3>
+            
+            <!-- Formulário de Contato -->
+            <div class="form-group">
+                <h4>Formulário de Contato</h4>
+                <label for="contact-name">Nome:</label>
+                <input type="text" id="contact-name" placeholder="Seu nome">
+                
+                <label for="contact-email">Email:</label>
+                <input type="email" id="contact-email" placeholder="seu@email.com">
+                
+                <label for="contact-message">Mensagem:</label>
+                <textarea id="contact-message" placeholder="Sua mensagem"></textarea>
+                
+                <button class="btn-demo" onclick="testPostAPI('contact')">
+                    <i class="fas fa-paper-plane"></i> Enviar Contato
+                </button>
+            </div>
+            
+            <!-- Newsletter -->
+            <div class="form-group">
+                <h4>Newsletter</h4>
+                <label for="newsletter-email">Email:</label>
+                <input type="email" id="newsletter-email" placeholder="seu@email.com">
+                
+                <button class="btn-demo" onclick="testPostAPI('newsletter')">
+                    <i class="fas fa-envelope"></i> Inscrever na Newsletter
+                </button>
+            </div>
+            
+            <!-- Solicitação de Demonstração -->
+            <div class="form-group">
+                <h4>Solicitar Demonstração</h4>
+                <label for="demo-name">Nome:</label>
+                <input type="text" id="demo-name" placeholder="Seu nome">
+                
+                <label for="demo-email">Email:</label>
+                <input type="email" id="demo-email" placeholder="seu@email.com">
+                
+                <label for="demo-business">Tipo de Negócio:</label>
+                <select id="demo-business">
+                    <option value="">Selecione...</option>
+                    <option value="barbearia">Barbearia</option>
+                    <option value="manicure">Manicure</option>
+                    <option value="esteticista">Esteticista</option>
+                    <option value="tecnico">Técnico</option>
+                    <option value="outro">Outro</option>
+                </select>
+                
+                <button class="btn-demo" onclick="testPostAPI('demo-request')">
+                    <i class="fas fa-play"></i> Solicitar Demonstração
+                </button>
+            </div>
+            
+            <div id="post-result" class="api-result" style="display: none;"></div>
+        </div>
+        
+        <!-- Status -->
+        <div id="status" class="status" style="display: none;"></div>
+        
+        <!-- Voltar -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="index.html" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar para a Landing Page
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Função para testar APIs GET
+        async function testGetAPI(endpoint) {
+            const resultDiv = document.getElementById('get-result');
+            const statusDiv = document.getElementById('status');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading"></div> Carregando...';
+            
+            try {
+                const response = await fetch(`api.php/${endpoint}`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = JSON.stringify(data, null, 2);
+                
+                showStatus('success', `API ${endpoint} executada com sucesso!`);
+            } catch (error) {
+                resultDiv.innerHTML = `Erro: ${error.message}`;
+                showStatus('error', `Erro ao executar API ${endpoint}: ${error.message}`);
+            }
+        }
+        
+        // Função para testar APIs POST
+        async function testPostAPI(endpoint) {
+            const resultDiv = document.getElementById('post-result');
+            const statusDiv = document.getElementById('status');
+            
+            let data = {};
+            
+            // Coleta dados baseado no endpoint
+            switch (endpoint) {
+                case 'contact':
+                    data = {
+                        name: document.getElementById('contact-name').value,
+                        email: document.getElementById('contact-email').value,
+                        message: document.getElementById('contact-message').value
+                    };
+                    break;
+                    
+                case 'newsletter':
+                    data = {
+                        email: document.getElementById('newsletter-email').value
+                    };
+                    break;
+                    
+                case 'demo-request':
+                    data = {
+                        name: document.getElementById('demo-name').value,
+                        email: document.getElementById('demo-email').value,
+                        business_type: document.getElementById('demo-business').value
+                    };
+                    break;
+            }
+            
+            // Validação básica
+            if (Object.values(data).some(value => !value)) {
+                showStatus('error', 'Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading"></div> Enviando...';
+            
+            try {
+                const response = await fetch(`api.php/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                resultDiv.innerHTML = JSON.stringify(result, null, 2);
+                
+                if (result.success) {
+                    showStatus('success', result.message || `API ${endpoint} executada com sucesso!`);
+                    // Limpa os campos após sucesso
+                    clearForm(endpoint);
+                } else {
+                    showStatus('error', result.error || 'Erro desconhecido');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Erro: ${error.message}`;
+                showStatus('error', `Erro ao executar API ${endpoint}: ${error.message}`);
+            }
+        }
+        
+        // Função para mostrar status
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            // Esconde após 5 segundos
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Função para limpar formulários
+        function clearForm(endpoint) {
+            switch (endpoint) {
+                case 'contact':
+                    document.getElementById('contact-name').value = '';
+                    document.getElementById('contact-email').value = '';
+                    document.getElementById('contact-message').value = '';
+                    break;
+                    
+                case 'newsletter':
+                    document.getElementById('newsletter-email').value = '';
+                    break;
+                    
+                case 'demo-request':
+                    document.getElementById('demo-name').value = '';
+                    document.getElementById('demo-email').value = '';
+                    document.getElementById('demo-business').value = '';
+                    break;
+            }
+        }
+        
+        // Teste inicial da API
+        window.addEventListener('load', function() {
+            // Testa se a API está funcionando
+            fetch('api.php/stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showStatus('success', 'API funcionando corretamente!');
+                    }
+                })
+                .catch(error => {
+                    showStatus('error', 'Erro ao conectar com a API. Verifique se o servidor PHP está rodando.');
+                });
+        });
+    </script>
+</body>
+</html>
