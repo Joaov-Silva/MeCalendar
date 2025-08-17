@@ -98,6 +98,172 @@ body {
     text-align: center;
 }
 
+/* Dark Mode Section */
+.dark-mode-section {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #475569;
+    border-bottom: 1px solid #475569;
+}
+
+.dark-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    color: #60a5fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.dark-mode-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+.dark-mode-btn i {
+    font-size: 1rem;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #0f172a;
+    color: #e2e8f0;
+}
+
+body.dark-mode .app-container {
+    background-color: #0f172a;
+}
+
+body.dark-mode .sidebar {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+body.dark-mode .main-content {
+    background-color: #0f172a;
+}
+
+body.dark-mode .main-header {
+    background-color: #1e293b;
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .page-title {
+    color: #f1f5f9;
+}
+
+body.dark-mode .page-subtitle {
+    color: #94a3b8;
+}
+
+body.dark-mode .calendar-container {
+    background-color: #1e293b;
+}
+
+body.dark-mode .calendar-header {
+    background-color: #1e293b;
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .calendar-grid {
+    background-color: #1e293b;
+}
+
+body.dark-mode .calendar-day {
+    background-color: #334155;
+    border-color: #475569;
+}
+
+body.dark-mode .calendar-day:hover {
+    background-color: #475569;
+}
+
+body.dark-mode .calendar-day.other-month {
+    background-color: #1e293b;
+    color: #64748b;
+}
+
+body.dark-mode .calendar-day.today {
+    background-color: #3b82f6;
+    color: white;
+}
+
+body.dark-mode .event-item {
+    background-color: #475569;
+    border-color: #64748b;
+}
+
+body.dark-mode .event-item:hover {
+    background-color: #64748b;
+}
+
+body.dark-mode .modal-content {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+body.dark-mode .modal-header {
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .modal-header h3 {
+    color: #f1f5f9;
+}
+
+body.dark-mode .form-group label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+    background-color: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+
+body.dark-mode .form-group input:focus,
+body.dark-mode .form-group select:focus,
+body.dark-mode .form-group textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+body.dark-mode .btn {
+    background-color: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+
+body.dark-mode .btn:hover {
+    background-color: #475569;
+}
+
+body.dark-mode .btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+body.dark-mode .btn-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+/* Transições suaves para dark mode */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 .sidebar-footer {
     padding: 1.5rem;
     border-top: 1px solid #475569;

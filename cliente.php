@@ -55,6 +55,14 @@
                 </ul>
             </nav>
             
+            <!-- Botão Dark Mode -->
+            <div class="dark-mode-section">
+                <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
+                    <i class="fas fa-moon" id="darkModeIcon"></i>
+                    <span>Modo Escuro</span>
+                </button>
+            </div>
+            
             <div class="sidebar-footer">
                 <div class="user-info">
                     <div class="user-avatar">
@@ -234,5 +242,8 @@
     </div>
 
     <script src="calendar.js"></script>
+    
+    <!-- Inclui o gerenciador de dark mode -->
+    <script src="dark-mode.js"></script>
 </body>
 </html>

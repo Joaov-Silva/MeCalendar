@@ -37,7 +37,7 @@ require_once 'config.php';
                 </p>
                 <div class="hero-buttons">
                     <?php if (!isLoggedIn()): ?>
-                        <a href="cadastro.php" class="btn btn-primary btn-lg">
+                        <a href="cadastro.php" class="btn btn-primary btn-lg">D
                             Criar Conta
                             <i class="fas fa-arrow-right"></i>
                         </a>
@@ -51,7 +51,7 @@ require_once 'config.php';
                                 <i class="fas fa-search"></i>
                             </a>
                         <?php else: ?>
-                            <a href="#" class="btn btn-primary btn-lg" onclick="alert('Funcionalidade de dashboard será implementada em breve!')">
+                            <a href="dashboard.js" class="btn btn-primary btn-lg">
                                 Acessar Dashboard
                                 <i class="fas fa-chart-line"></i>
                             </a>

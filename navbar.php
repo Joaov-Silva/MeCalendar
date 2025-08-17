@@ -18,6 +18,11 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
                 <a href="index.php" class="nav-link">Início</a>
                 <a href="calendar.php" class="nav-link">Calendário</a>
                 
+                <!-- Botão Dark Mode - sempre visível -->
+                <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
+                    <i class="fas fa-moon" id="darkModeIcon"></i>
+                </button>
+                
                 <?php if (isLoggedIn() && !$isAuthPage): ?>
                     <?php if (isCliente()): ?>
                         <a href="buscar_servicos.php" class="nav-link">Buscar Serviços</a>
@@ -86,6 +91,114 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
 </header>
 
 <style>
+/* Botão Dark Mode */
+.dark-mode-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #6b7280;
+    margin-right: 1rem;
+}
+
+.dark-mode-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode-btn:active {
+    transform: translateY(0);
+}
+
+.dark-mode-btn i {
+    font-size: 1rem;
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #111827;
+    color: #f9fafb;
+}
+
+body.dark-mode .header {
+    background: rgba(17, 24, 39, 0.9);
+    border-bottom-color: #374151;
+}
+
+body.dark-mode .logo-text {
+    color: #f9fafb;
+}
+
+body.dark-mode .nav-link {
+    color: #d1d5db;
+}
+
+body.dark-mode .nav-link:hover {
+    color: #f9fafb;
+}
+
+body.dark-mode .dark-mode-btn {
+    background: #374151;
+    border-color: #4b5563;
+    color: #fbbf24;
+}
+
+body.dark-mode .dark-mode-btn:hover {
+    background: #4b5563;
+    color: #f59e0b;
+}
+
+body.dark-mode .user-menu-btn {
+    color: #d1d5db;
+}
+
+body.dark-mode .user-menu-btn:hover {
+    background: #374151;
+}
+
+body.dark-mode .user-name {
+    color: #d1d5db;
+}
+
+body.dark-mode .user-dropdown {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+body.dark-mode .dropdown-header {
+    border-bottom-color: #374151;
+}
+
+body.dark-mode .user-name-large {
+    color: #f9fafb;
+}
+
+body.dark-mode .user-email {
+    color: #9ca3af;
+}
+
+body.dark-mode .dropdown-item {
+    color: #d1d5db;
+}
+
+body.dark-mode .dropdown-item:hover {
+    background: #374151;
+    color: #f9fafb;
+}
+
+body.dark-mode .dropdown-item.text-danger:hover {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
 .user-menu {
     position: relative;
 }
@@ -236,6 +349,16 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
         right: -1rem;
         width: 260px;
     }
+    
+    .dark-mode-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        margin-right: 0.5rem;
+    }
+    
+    .dark-mode-btn i {
+        font-size: 0.875rem;
+    }
 }
 </style>
 
@@ -263,3 +386,6 @@ document.addEventListener('keydown', function(event) {
     }
 });
 </script>
+
+<!-- Inclui o gerenciador de dark mode -->
+<script src="dark-mode.js"></script>
