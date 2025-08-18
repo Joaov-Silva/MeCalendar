@@ -1,3 +1,16 @@
+<?php
+require_once 'config.php';
+require_once 'auth_check.php';
+
+// Verifica se o usuário está logado
+if (!isLoggedIn()) {
+    header('Location: login.php');
+    exit;
+}
+
+$currentUser = getCurrentUser();
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -65,8 +78,8 @@
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="user-details">
-                        <span class="user-name">João Silva</span>
-                        <span class="user-role">Barbeiro</span>
+                        <span class="user-name"><?php echo htmlspecialchars($currentUser['nome']); ?></span>
+                        <span class="user-role"><?php echo ucfirst($currentUser['tipo_nome']); ?></span>
                     </div>
                 </div>
             </div>
@@ -81,7 +94,7 @@
                     <p class="page-subtitle">Gerencie seus agendamentos</p>
                 </div>
                 <div class="header-right">
-                    <button class="btn btn-secondary">
+                    <button class="btn btn-secondary" id="newEventBtn">
                         <i class="fas fa-plus"></i>
                         Novo Agendamento
                     </button>
@@ -148,8 +161,12 @@
                             <span id="eventPhone">-</span>
                         </div>
                         <div class="info-item">
-                            <label>Serviço:</label>
-                            <span id="eventService">-</span>
+                            <label>Tipo de Serviço:</label>
+                            <span id="eventServiceType">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Descrição do Serviço:</label>
+                            <span id="eventServiceDescription">-</span>
                         </div>
                         <div class="info-item">
                             <label>Data:</label>
@@ -160,8 +177,16 @@
                             <span id="eventTime">-</span>
                         </div>
                         <div class="info-item">
+                            <label>Valor:</label>
+                            <span id="eventValue">-</span>
+                        </div>
+                        <div class="info-item">
                             <label>Status:</label>
                             <span class="status-badge confirmed" id="eventStatus">Confirmado</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Observações:</label>
+                            <span id="eventNotes">-</span>
                         </div>
                     </div>
                     <div class="event-actions">
@@ -203,36 +228,54 @@
                         <input type="tel" id="clientPhone" name="clientPhone" required>
                     </div>
                     <div class="form-group">
-                        <label for="serviceType">Serviço *</label>
-                        <select id="serviceType" name="serviceType" required>
-                            <option value="">Selecione um serviço</option>
-                            <option value="corte">Corte</option>
-                            <option value="barba">Barba</option>
-                            <option value="corte-barba">Corte + Barba</option>
-                            <option value="hidratacao">Hidratação</option>
-                            <option value="pigmentacao">Pigmentação</option>
-                            <option value="tratamento">Tratamento Capilar</option>
-                        </select>
+                        <label for="clientEmail">Email (opcional)</label>
+                        <input type="email" id="clientEmail" name="clientEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceType">Tipo de Serviço *</label>
+                        <input type="text" id="serviceType" name="serviceType" placeholder="Ex: Corte de cabelo, Manicure, Consulta, etc." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDescription">Descrição Detalhada do Serviço</label>
+                        <textarea id="serviceDescription" name="serviceDescription" rows="3" placeholder="Descreva detalhadamente o que será realizado..."></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="eventDate">Data</label>
+                            <label for="eventDate">Data *</label>
                             <input type="date" id="eventDate" name="eventDate" required>
                         </div>
                         <div class="form-group">
-                            <label for="eventTime">Horário</label>
+                            <label for="eventTime">Horário *</label>
                             <input type="time" id="eventTime" name="eventTime" required>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDuration">Duração Estimada (minutos)</label>
+                            <input type="number" id="eventDuration" name="eventDuration" min="15" step="15" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventValue">Valor do Serviço (R$)</label>
+                            <input type="number" id="eventValue" name="eventValue" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
                     <div class="form-group">
-                        <label for="eventNotes">Observações</label>
-                        <textarea id="eventNotes" name="eventNotes" rows="3"></textarea>
+                        <label for="eventNotes">Observações Adicionais</label>
+                        <textarea id="eventNotes" name="eventNotes" rows="3" placeholder="Informações extras, preferências do cliente, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventStatus">Status Inicial</label>
+                        <select id="eventStatus" name="eventStatus">
+                            <option value="agendado">Agendado</option>
+                            <option value="confirmado">Confirmado</option>
+                            <option value="pendente">Pendente</option>
+                        </select>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelEvent">Cancelar</button>
-                <button class="btn btn-primary" id="saveEvent">Salvar</button>
+                <button class="btn btn-primary" id="saveEvent">Salvar Agendamento</button>
             </div>
         </div>
     </div>

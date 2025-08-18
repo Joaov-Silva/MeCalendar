@@ -35,9 +35,12 @@ class Calendar {
         });
 
         // Modal de novo evento
-        document.querySelector('.btn-secondary').addEventListener('click', () => {
-            this.openNewEventModal();
-        });
+        const newEventBtn = document.querySelector('#newEventBtn');
+        if (newEventBtn) {
+            newEventBtn.addEventListener('click', () => {
+                this.openNewEventModal();
+            });
+        }
 
         document.getElementById('closeModal').addEventListener('click', () => {
             this.closeNewEventModal();
@@ -78,15 +81,19 @@ class Calendar {
         if (savedEvents) {
             this.events = JSON.parse(savedEvents);
         } else {
-            // Eventos de exemplo
+            // Eventos de exemplo para microempresários
             this.events = [
                 {
                     id: 1,
                     client: 'João Silva',
                     phone: '(11) 99999-9999',
-                    service: 'corte-barba',
+                    email: 'joao@email.com',
+                    serviceType: 'Corte de Cabelo',
+                    serviceDescription: 'Corte masculino moderno com acabamento na nuca',
                     date: '2025-01-15',
                     time: '14:00',
+                    duration: 60,
+                    value: 45.00,
                     status: 'confirmed',
                     notes: 'Cliente preferência por corte mais curto'
                 },
@@ -94,9 +101,13 @@ class Calendar {
                     id: 2,
                     client: 'Maria Santos',
                     phone: '(11) 88888-8888',
-                    service: 'hidratacao',
+                    email: 'maria@email.com',
+                    serviceType: 'Manicure Completa',
+                    serviceDescription: 'Aplicação de esmalte gel com decoração',
                     date: '2025-01-20',
                     time: '10:30',
+                    duration: 90,
+                    value: 35.00,
                     status: 'pending',
                     notes: 'Primeira vez no salão'
                 },
@@ -104,11 +115,15 @@ class Calendar {
                     id: 3,
                     client: 'Pedro Costa',
                     phone: '(11) 77777-7777',
-                    service: 'corte',
+                    email: 'pedro@email.com',
+                    serviceType: 'Consulta Técnica',
+                    serviceDescription: 'Avaliação de equipamento e orçamento',
                     date: '2025-01-22',
                     time: '16:00',
+                    duration: 45,
+                    value: 80.00,
                     status: 'confirmed',
-                    notes: ''
+                    notes: 'Cliente corporativo'
                 }
             ];
             this.saveEvents();
@@ -225,22 +240,13 @@ class Calendar {
 
     createEventElement(event) {
         const eventElement = document.createElement('div');
-        eventElement.className = `event-item ${event.service} ${event.status}`;
+        eventElement.className = `event-item ${event.serviceType.toLowerCase().replace(/\s/g, '-')}`;
         eventElement.dataset.eventId = event.id;
-        
-        const serviceNames = {
-            'corte': 'Corte',
-            'barba': 'Barba',
-            'corte-barba': 'Corte + Barba',
-            'hidratacao': 'Hidratação',
-            'pigmentacao': 'Pigmentação',
-            'tratamento': 'Tratamento'
-        };
         
         eventElement.innerHTML = `
             <div class="event-title">${event.client}</div>
             <div class="event-time">${event.time}</div>
-            <div class="event-service">${serviceNames[event.service] || event.service}</div>
+            <div class="event-service">${event.serviceType}</div>
             <button class="delete-event" data-event-id="${event.id}" title="Deletar agendamento">
                 <i class="fas fa-trash"></i>
             </button>
@@ -283,44 +289,40 @@ class Calendar {
     }
 
     showEventPanel(event) {
-        this.selectedEvent = event;
         const panel = document.getElementById('eventPanel');
         
-        const serviceNames = {
-            'corte': 'Corte',
-            'barba': 'Barba',
-            'corte-barba': 'Corte + Barba',
-            'hidratacao': 'Hidratação',
-            'pigmentacao': 'Pigmentação',
-            'tratamento': 'Tratamento'
-        };
-        
+        // Atualizar informações do evento
         document.getElementById('eventClient').textContent = event.client;
         document.getElementById('eventPhone').textContent = event.phone;
-        document.getElementById('eventService').textContent = serviceNames[event.service] || event.service;
+        document.getElementById('eventServiceType').textContent = event.serviceType;
+        document.getElementById('eventServiceDescription').textContent = event.serviceDescription || 'Não informado';
         document.getElementById('eventDate').textContent = this.formatDateForDisplay(event.date);
         document.getElementById('eventTime').textContent = event.time;
+        document.getElementById('eventValue').textContent = `R$ ${event.value.toFixed(2)}`;
         document.getElementById('eventStatus').textContent = this.getStatusText(event.status);
         document.getElementById('eventStatus').className = `status-badge ${event.status}`;
+        document.getElementById('eventNotes').textContent = event.notes || 'Nenhuma observação';
         
         // Atualizar botões de ação
         const actionsContainer = document.querySelector('.event-actions');
-        actionsContainer.innerHTML = `
-            <button class="btn btn-outline" onclick="calendar.editEvent(${event.id})">
-                <i class="fas fa-edit"></i>
-                Editar
-            </button>
-            <button class="btn btn-outline" onclick="calendar.callClient('${event.phone}')">
-                <i class="fas fa-phone"></i>
-                Ligar
-            </button>
-            <button class="btn btn-danger" onclick="calendar.deleteEvent(${event.id})">
-                <i class="fas fa-trash"></i>
-                Deletar
-            </button>
-        `;
+        if (actionsContainer) {
+            actionsContainer.innerHTML = `
+                <button class="btn btn-outline" onclick="calendar.editEvent(${event.id})">
+                    <i class="fas fa-edit"></i>
+                    Editar
+                </button>
+                <button class="btn btn-outline" onclick="calendar.callClient('${event.phone}')">
+                    <i class="fas fa-phone"></i>
+                    Ligar
+                </button>
+                <button class="btn btn-danger" onclick="calendar.deleteEvent(${event.id})">
+                    <i class="fas fa-trash"></i>
+                    Cancelar
+                </button>
+            `;
+        }
         
-        panel.classList.add('active');
+        panel.classList.add('show');
     }
 
     closeEventPanel() {
@@ -328,75 +330,110 @@ class Calendar {
         this.selectedEvent = null;
     }
 
-    openNewEventModal(selectedDate = null) {
+    openNewEventModal() {
         const modal = document.getElementById('newEventModal');
-        const form = document.getElementById('newEventForm');
+        modal.classList.add('show');
         
-        if (selectedDate) {
-            document.getElementById('eventDate').value = selectedDate;
-        } else {
-            document.getElementById('eventDate').value = this.formatDate(new Date());
-        }
+        // Resetar formulário
+        document.getElementById('newEventForm').reset();
         
-        form.reset();
-        modal.classList.add('active');
+        // Resetar botão para "Salvar"
+        const saveButton = document.getElementById('saveEvent');
+        saveButton.textContent = 'Salvar Agendamento';
+        saveButton.onclick = () => this.saveNewEvent();
+        
+        // Definir data atual como padrão
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('eventDate').value = today;
+        
+        // Definir horário atual + 1 hora como padrão
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        const timeString = now.toTimeString().slice(0, 5);
+        document.getElementById('eventTime').value = timeString;
     }
 
     closeNewEventModal() {
-        document.getElementById('newEventModal').classList.remove('active');
+        const modal = document.getElementById('newEventModal');
+        modal.classList.remove('show');
+        
+        // Limpar formulário
+        document.getElementById('newEventForm').reset();
+        
+        // Resetar botão
+        const saveButton = document.getElementById('saveEvent');
+        saveButton.textContent = 'Salvar Agendamento';
+        saveButton.onclick = () => this.saveNewEvent();
     }
 
     saveNewEvent() {
         const form = document.getElementById('newEventForm');
         const formData = new FormData(form);
         
-        // Validar campos obrigatórios
         const clientName = formData.get('clientName').trim();
         const clientPhone = formData.get('clientPhone').trim();
-        const serviceType = formData.get('serviceType');
+        const clientEmail = formData.get('clientEmail').trim();
+        const serviceType = formData.get('serviceType').trim();
+        const serviceDescription = formData.get('serviceDescription').trim();
         const eventDate = formData.get('eventDate');
         const eventTime = formData.get('eventTime');
+        const duration = parseInt(formData.get('eventDuration')) || 60;
+        const value = parseFloat(formData.get('eventValue')) || 0.00;
+        const status = formData.get('eventStatus');
+        const notes = formData.get('eventNotes').trim();
         
         if (!clientName || !clientPhone || !serviceType || !eventDate || !eventTime) {
             this.showNotification('Por favor, preencha todos os campos obrigatórios!', 'error');
             return;
         }
         
-        const event = {
+        // Criar novo evento
+        const newEvent = {
             id: Date.now(),
             client: clientName,
             phone: clientPhone,
-            service: serviceType,
+            email: clientEmail,
+            serviceType: serviceType,
+            serviceDescription: serviceDescription,
             date: eventDate,
             time: eventTime,
-            status: 'pending',
-            notes: formData.get('eventNotes') || ''
+            duration: duration,
+            value: value,
+            status: status,
+            notes: notes
         };
-
-        this.events.push(event);
+        
+        this.events.push(newEvent);
         this.saveEvents();
         this.renderCalendar();
         this.closeNewEventModal();
-        
         this.showNotification('Agendamento criado com sucesso!', 'success');
+        
+        // Limpar formulário
+        form.reset();
     }
 
     editEvent(eventId) {
         const event = this.events.find(e => e.id === eventId);
         if (!event) return;
         
-        // Preencher o modal com os dados do evento
+        // Preencher formulário com dados do evento
         document.getElementById('clientName').value = event.client;
         document.getElementById('clientPhone').value = event.phone;
-        document.getElementById('serviceType').value = event.service;
+        document.getElementById('clientEmail').value = event.email || '';
+        document.getElementById('serviceType').value = event.serviceType;
+        document.getElementById('serviceDescription').value = event.serviceDescription || '';
         document.getElementById('eventDate').value = event.date;
         document.getElementById('eventTime').value = event.time;
-        document.getElementById('eventNotes').value = event.notes;
+        document.getElementById('eventDuration').value = event.duration || 60;
+        document.getElementById('eventValue').value = event.value || 0.00;
+        document.getElementById('eventStatus').value = event.status;
+        document.getElementById('eventNotes').value = event.notes || '';
         
-        // Mudar o comportamento do botão salvar para editar
-        const saveBtn = document.getElementById('saveEvent');
-        saveBtn.textContent = 'Atualizar';
-        saveBtn.onclick = () => this.updateEvent(eventId);
+        // Mudar botão para "Atualizar"
+        const saveButton = document.getElementById('saveEvent');
+        saveButton.textContent = 'Atualizar Agendamento';
+        saveButton.onclick = () => this.updateEvent(eventId);
         
         this.openNewEventModal();
     }
@@ -405,29 +442,37 @@ class Calendar {
         const form = document.getElementById('newEventForm');
         const formData = new FormData(form);
         
-        const eventIndex = this.events.findIndex(e => e.id === eventId);
-        if (eventIndex === -1) return;
-        
-        this.events[eventIndex] = {
-            ...this.events[eventIndex],
+        const updatedEvent = {
             client: formData.get('clientName').trim(),
             phone: formData.get('clientPhone').trim(),
-            service: formData.get('serviceType'),
+            email: formData.get('clientEmail').trim(),
+            serviceType: formData.get('serviceType').trim(),
+            serviceDescription: formData.get('serviceDescription').trim(),
             date: formData.get('eventDate'),
             time: formData.get('eventTime'),
-            notes: formData.get('eventNotes') || ''
+            duration: parseInt(formData.get('eventDuration')) || 60,
+            value: parseFloat(formData.get('eventValue')) || 0.00,
+            status: formData.get('eventStatus'),
+            notes: formData.get('eventNotes').trim()
         };
         
-        this.saveEvents();
-        this.renderCalendar();
-        this.closeNewEventModal();
-        
-        // Restaurar o botão salvar
-        const saveBtn = document.getElementById('saveEvent');
-        saveBtn.textContent = 'Salvar';
-        saveBtn.onclick = () => this.saveNewEvent();
-        
-        this.showNotification('Agendamento atualizado com sucesso!', 'success');
+        // Atualizar evento existente
+        const eventIndex = this.events.findIndex(e => e.id === eventId);
+        if (eventIndex !== -1) {
+            this.events[eventIndex] = { ...this.events[eventIndex], ...updatedEvent };
+            this.saveEvents();
+            this.renderCalendar();
+            this.closeNewEventModal();
+            this.showNotification('Agendamento atualizado com sucesso!', 'success');
+            
+            // Resetar botão
+            const saveButton = document.getElementById('saveEvent');
+            saveButton.textContent = 'Salvar Agendamento';
+            saveButton.onclick = () => this.saveNewEvent();
+            
+            // Limpar formulário
+            form.reset();
+        }
     }
 
     deleteEvent(eventId) {
