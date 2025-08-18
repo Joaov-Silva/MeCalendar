@@ -38,7 +38,7 @@ $currentUser = getCurrentUser();
             <nav class="sidebar-nav">
                 <ul class="nav-list">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active">
+                        <a href="calendar.php" class="nav-link active">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Calendário</span>
                         </a>
