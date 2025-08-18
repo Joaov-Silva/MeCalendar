@@ -13,7 +13,7 @@ Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL,
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Backend**: PHP 7.4+
+- **Backend**: PHP 7.4+, JS
 - **Banco de Dados**: MySQL
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Bibliotecas**: Font Awesome para ícones
@@ -30,8 +30,8 @@ Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL,
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/sistema-agendamento.git
-   cd sistema-agendamento
+   git clone https://github.com/Nicolas-Pierini/ProAgenda.git
+   cd ProAgenda
    ```
 
 2. **Configure o banco de dados**
@@ -63,7 +63,7 @@ O sistema utiliza as seguintes tabelas principais:
 ### Para Clientes
 - Cadastro e login
 - Busca de serviços por categoria e localização
-- Visualização de estabelecimentos
+- Visualização de seus agendamentos
 - Sistema de agendamentos
 
 ### Para Profissionais
