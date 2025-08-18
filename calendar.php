@@ -44,7 +44,7 @@ $currentUser = getCurrentUser();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="cliente.php" class="nav-link">
                             <i class="fas fa-users"></i>
                             <span>Clientes</span>
                         </a>
