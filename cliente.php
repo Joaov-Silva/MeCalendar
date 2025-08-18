@@ -284,5 +284,8 @@ $currentUser = getCurrentUser();
     
     <!-- Inclui o gerenciador de dark mode -->
     <script src="dark-mode.js"></script>
+    
+    <!-- Inclui o sistema de formatação automática -->
+    <script src="formatters.js"></script>
 </body>
 </html>

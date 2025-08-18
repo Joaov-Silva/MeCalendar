@@ -177,21 +177,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		</footer>
 	</div>
 
+	<!-- Inclui o sistema de formatação automática -->
+	<script src="formatters.js"></script>
+	
 	<script>
-		function maskCPF(input) {
-			let v = input.value.replace(/\D/g, '');
-			v = v.replace(/(\d{3})(\d)/, '$1.$2');
-			v = v.replace(/(\d{3})(\d)/, '$1.$2');
-			v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-			input.value = v;
-		}
-		function maskPhone(input) {
-			let v = input.value.replace(/\D/g, '');
-			if (v.length > 11) v = v.substring(0,11);
-			if (v.length >= 11) input.value = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-			else if (v.length >= 10) input.value = v.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-			else input.value = v;
-		}
+		// Aplica formatação específica para campos do cadastro
+		document.addEventListener('DOMContentLoaded', function() {
+			// Formatação de CPF
+			const cpfInput = document.getElementById('cpf');
+			if (cpfInput) {
+				cpfInput.addEventListener('input', function() {
+					Formatters.applyFormatting(this, 'cpf');
+				});
+			}
+			
+			// Formatação de telefone
+			const phoneInput = document.getElementById('telefone');
+			if (phoneInput) {
+				phoneInput.addEventListener('input', function() {
+					Formatters.applyFormatting(this, 'phone');
+				});
+			}
+		});
 	</script>
 </body>
 </html>
