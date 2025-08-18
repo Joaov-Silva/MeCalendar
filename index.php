@@ -181,3 +181,8 @@ require_once 'config.php';
     <script src="dark-mode.js"></script>
 </body>
 </html>
+
+<style>
+/* General improvements */
+
+</style>
