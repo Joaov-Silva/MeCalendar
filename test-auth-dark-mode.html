@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Dark Mode - Páginas de Autenticação</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .test-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+        }
+        .test-section h3 {
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        .auth-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+        .preview-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: white;
+        }
+        .preview-header {
+            background: #f8fafc;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            color: #374151;
+        }
+        .preview-content {
+            padding: 1rem;
+        }
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .status-active {
+            background: #10b981;
+            color: white;
+        }
+        .status-inactive {
+            background: #6b7280;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .auth-preview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Teste Dark Mode - Páginas de Autenticação</h1>
+        
+        <!-- Botão Dark Mode -->
+        <div style="text-align: center; margin: 2rem 0;">
+            <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
+                <i class="fas fa-moon" id="darkModeIcon"></i>
+                Alternar Dark Mode
+            </button>
+        </div>
+        
+        <!-- Status do Dark Mode -->
+        <div class="test-section">
+            <h3>Status do Dark Mode</h3>
+            <div class="status-indicator" id="statusIndicator">
+                <span id="darkModeStatus">Carregando...</span>
+            </div>
+            <p>Classe aplicada ao body: <code id="bodyClass">Carregando...</code></p>
+        </div>
+        
+        <!-- Preview das páginas de autenticação -->
+        <div class="test-section">
+            <h3>Preview das Páginas de Autenticação</h3>
+            <p>Veja como as páginas de login e cadastro ficam no dark mode:</p>
+            
+            <div class="auth-preview">
+                <!-- Preview Login -->
+                <div class="preview-card">
+                    <div class="preview-header">Página de Login</div>
+                    <div class="preview-content">
+                        <div class="auth-wrapper" style="min-height: auto; background: transparent;">
+                            <div class="auth-main" style="padding: 0;">
+                                <div class="auth-card" style="max-width: 100%; box-shadow: none; border: 1px solid #e5e7eb;">
+                                    <div class="auth-header">
+                                        <div class="logo-icon"><i class="fas fa-calendar"></i></div>
+                                        <div class="auth-title">Bem-vindo de volta</div>
+                                        <p class="auth-subtitle">Entre com seu e-mail e senha</p>
+                                    </div>
+                                    
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="email" class="label">E-mail</label>
+                                            <input type="email" id="email" class="input" placeholder="seu@email.com" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="senha" class="label">Senha</label>
+                                            <input type="password" id="senha" class="input" placeholder="Sua senha" />
+                                        </div>
+                                        <div class="inline">
+                                            <label class="text-muted" style="display:flex; align-items:center; gap:.5rem;">
+                                                <input type="checkbox" /> Lembrar-me
+                                            </label>
+                                            <a href="#" class="link">Esqueci minha senha</a>
+                                        </div>
+                                        <div class="actions">
+                                            <button type="button" class="btn btn-primary btn-lg" style="width:100%; justify-content:center;">Entrar</button>
+                                            <a href="#" class="btn btn-outline btn-lg" style="width:100%; justify-content:center;">Criar conta</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preview Cadastro -->
+                <div class="preview-card">
+                    <div class="preview-header">Página de Cadastro</div>
+                    <div class="preview-content">
+                        <div class="auth-wrapper" style="min-height: auto; background: transparent;">
+                            <div class="auth-main" style="padding: 0;">
+                                <div class="auth-card" style="max-width: 100%; box-shadow: none; border: 1px solid #e5e7eb;">
+                                    <div class="auth-header">
+                                        <div class="logo-icon"><i class="fas fa-calendar"></i></div>
+                                        <div class="auth-title">Criar conta</div>
+                                        <p class="auth-subtitle">Preencha seus dados para criar sua conta</p>
+                                    </div>
+                                    
+                                    <form>
+                                        <div class="form-group">
+                                            <label class="label">Tipo de conta</label>
+                                            <div style="display:flex; gap: .75rem;">
+                                                <label style="display:flex; align-items:center; gap:.5rem;">
+                                                    <input type="radio" name="tipo" value="cliente" checked> Cliente
+                                                </label>
+                                                <label style="display:flex; align-items:center; gap:.5rem;">
+                                                    <input type="radio" name="tipo" value="profissional"> Profissional
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="nome" class="label">Nome completo</label>
+                                                <input type="text" id="nome" class="input" placeholder="Seu nome" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="cpf" class="label">CPF</label>
+                                                <input type="text" id="cpf" class="input" placeholder="000.000.000-00" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="email" class="label">E-mail</label>
+                                                <input type="email" id="email" class="input" placeholder="seu@email.com" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="telefone" class="label">Telefone</label>
+                                                <input type="tel" id="telefone" class="input" placeholder="(00) 00000-0000" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="senha" class="label">Senha</label>
+                                                <input type="password" id="senha" class="input" placeholder="Sua senha" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="confirmar" class="label">Confirmar senha</label>
+                                                <input type="password" id="confirmar" class="input" placeholder="Confirme sua senha" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="actions">
+                                            <button type="button" class="btn btn-primary btn-lg" style="width:100%; justify-content:center;">Criar conta</button>
+                                            <a href="#" class="btn btn-outline btn-lg" style="width:100%; justify-content:center;">Já tenho uma conta</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Teste de mensagens -->
+        <div class="test-section">
+            <h3>Teste de Mensagens</h3>
+            <div class="error">Esta é uma mensagem de erro de exemplo</div>
+            <div class="success">Esta é uma mensagem de sucesso de exemplo</div>
+        </div>
+        
+        <!-- Links para as páginas reais -->
+        <div class="test-section">
+            <h3>Links para Teste</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="login.php" class="btn btn-primary">Testar Login Real</a>
+                <a href="cadastro.php" class="btn btn-primary">Testar Cadastro Real</a>
+                <a href="test-dark-mode.html" class="btn btn-outline">Teste Geral Dark Mode</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="dark-mode.js"></script>
+    <script>
+        // Atualiza o status do dark mode
+        function updateStatus() {
+            const isActive = window.darkModeManager ? window.darkModeManager.isActive() : false;
+            const bodyClass = document.body.className;
+            
+            document.getElementById('darkModeStatus').textContent = isActive ? 'ATIVO' : 'INATIVO';
+            document.getElementById('bodyClass').textContent = bodyClass || 'Nenhuma';
+            
+            // Atualizar indicador visual
+            const indicator = document.getElementById('statusIndicator');
+            if (isActive) {
+                indicator.className = 'status-indicator status-active';
+            } else {
+                indicator.className = 'status-indicator status-inactive';
+            }
+        }
+        
+        // Atualiza o status quando o dark mode mudar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            
+            // Observa mudanças na classe do body
+            const observer = new MutationObserver(updateStatus);
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            
+            // Atualizar a cada segundo para garantir sincronização
+            setInterval(updateStatus, 1000);
+        });
+    </script>
+</body>
+</html>
+

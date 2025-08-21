@@ -104,34 +104,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Agendamento - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .auth-wrapper { min-height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-        .auth-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
-        .auth-card { width: 100%; max-width: 420px; background: #fff; border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,.08); padding: 2rem; }
-        .auth-header { display: flex; flex-direction: column; gap: .5rem; align-items: center; margin-bottom: 1.5rem; }
-        .auth-title { font-size: 1.5rem; font-weight: 700; color: #111827; }
-        .auth-subtitle { color: #6b7280; font-size: .95rem; text-align: center; }
-        .form-group { margin-bottom: 1rem; }
-        .label { display:block; margin-bottom:.5rem; color:#374151; font-weight:500; font-size:.9rem; }
-        .input { width: 100%; padding: .75rem .875rem; border: 1px solid #e5e7eb; border-radius: .5rem; outline: none; font-size: 1rem; transition: border-color .2s; background:#fff; color:#111827; }
-        .input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
-        .inline { display:flex; align-items:center; justify-content: space-between; }
-        .error { background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; padding:.75rem; border-radius:.5rem; font-size:.9rem; margin-bottom:1rem; }
-        .success { background:#dcfce7; color:#166534; border:1px solid #bbf7d0; padding:.75rem; border-radius:.5rem; font-size:.9rem; margin-bottom:1rem; }
-        .actions { display:flex; flex-direction:column; gap:.75rem; margin-top:1rem; }
-        .text-muted { color:#6b7280; font-size:.9rem; }
-        .link { color:#2563eb; text-decoration:none; }
-        .link:hover { text-decoration:underline; }
-    </style>
+    <!-- Inclui o gerenciador de dark mode -->
+    <script src="dark-mode.js"></script>
 </head>
 <body>
     <div class="auth-wrapper">
         <?php include 'navbar.php'; ?>
 
         <!-- Main -->
-        <main class="auth-main">
+        <main class="auth-main d-flex align-items-center justify-content-center min-vh-100">
             <div class="auth-card">
                 <div class="auth-header">
                     <div class="logo-icon"><i class="fas fa-calendar"></i></div>
@@ -171,9 +155,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </main>
 
         <!-- Footer simples -->
-        <footer class="footer" style="padding:1.5rem 1rem;">
+        <footer class="footer">
             <div class="container">
-                <div class="footer-bottom" style="border:none; padding-top:0; text-align:center;">&copy; 2025 Sistema de Agendamento</div>
+                <div class="footer-bottom">&copy; 2025 Sistema de Agendamento</div>
             </div>
         </footer>
     </div>

@@ -3,28 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste Dark Mode</title>
+    <title>Teste Dark Mode - Sistema de Agendamento</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .test-container {
             padding: 2rem;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         .test-section {
             margin: 2rem 0;
-            padding: 1rem;
+            padding: 1.5rem;
             border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
+            background: white;
         }
         .test-section h3 {
             margin-bottom: 1rem;
+            color: #1e293b;
         }
         .color-test {
             display: flex;
             gap: 1rem;
             margin: 1rem 0;
+            flex-wrap: wrap;
         }
         .color-box {
             width: 100px;
@@ -35,39 +38,85 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            border-radius: 0.5rem;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .test-card {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+        }
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .status-active {
+            background: #10b981;
+            color: white;
+        }
+        .status-inactive {
+            background: #6b7280;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="test-container">
-        <h1>Teste do Dark Mode</h1>
+        <h1>Teste Completo do Dark Mode</h1>
         
         <!-- Botão Dark Mode -->
-        <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
-            <i class="fas fa-moon" id="darkModeIcon"></i>
-        </button>
+        <div style="text-align: center; margin: 2rem 0;">
+            <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
+                <i class="fas fa-moon" id="darkModeIcon"></i>
+                Alternar Dark Mode
+            </button>
+        </div>
+        
+        <!-- Status do Dark Mode -->
+        <div class="test-section">
+            <h3>Status do Dark Mode</h3>
+            <div class="status-indicator" id="statusIndicator">
+                <span id="darkModeStatus">Carregando...</span>
+            </div>
+            <p>Classe aplicada ao body: <code id="bodyClass">Carregando...</code></p>
+            <p>Valor no localStorage: <code id="localStorageValue">Carregando...</code></p>
+        </div>
         
         <div class="test-section">
-            <h3>Teste de Background</h3>
+            <h3>Teste de Background e Cores</h3>
             <p>Esta seção deve ter background escuro no modo dark.</p>
             <div class="color-test">
-                <div class="color-box" style="background: #111827;">#111827</div>
-                <div class="color-box" style="background: #1f2937;">#1f2937</div>
-                <div class="color-box" style="background: #374151;">#374151</div>
+                <div class="color-box" style="background: #0f172a;">#0f172a</div>
+                <div class="color-box" style="background: #1e293b;">#1e293b</div>
+                <div class="color-box" style="background: #334155;">#334155</div>
+                <div class="color-box" style="background: #475569;">#475569</div>
             </div>
         </div>
         
         <div class="test-section">
             <h3>Teste de Texto</h3>
             <p>Este texto deve ser branco no modo dark.</p>
-            <p style="color: #d1d5db;">Este texto deve ser cinza claro no modo dark.</p>
+            <p style="color: #cbd5e1;">Este texto deve ser cinza claro no modo dark.</p>
+            <p style="color: #94a3b8;">Este texto deve ser cinza médio no modo dark.</p>
         </div>
         
         <div class="test-section">
             <h3>Teste de Botões</h3>
-            <button class="btn btn-primary">Botão Primário</button>
-            <button class="btn btn-outline">Botão Outline</button>
-            <button class="btn btn-secondary">Botão Secundário</button>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary">Botão Primário</button>
+                <button class="btn btn-outline">Botão Outline</button>
+                <button class="btn btn-secondary">Botão Secundário</button>
+                <button class="btn btn-danger">Botão Perigo</button>
+            </div>
         </div>
         
         <div class="test-section">
@@ -80,12 +129,45 @@
                 <label>Email:</label>
                 <input type="email" placeholder="Digite seu email">
             </div>
+            <div class="form-group">
+                <label>Mensagem:</label>
+                <textarea placeholder="Digite sua mensagem"></textarea>
+            </div>
         </div>
         
         <div class="test-section">
-            <h3>Estado do Dark Mode</h3>
-            <p>Dark Mode ativo: <span id="darkModeStatus">Não</span></p>
-            <p>Classe aplicada: <span id="bodyClass">Nenhuma</span></p>
+            <h3>Teste de Cards</h3>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h4>Card 1</h4>
+                    <p>Este é um card de teste para verificar as cores no dark mode.</p>
+                </div>
+                <div class="test-card">
+                    <h4>Card 2</h4>
+                    <p>Outro card para testar a consistência das cores.</p>
+                </div>
+                <div class="test-card">
+                    <h4>Card 3</h4>
+                    <p>Mais um card para garantir que tudo está funcionando.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Teste de Links</h3>
+            <p><a href="#" style="color: #3b82f6;">Link primário</a> - deve ser azul claro no dark mode</p>
+            <p><a href="#" style="color: #64748b;">Link secundário</a> - deve ser cinza no dark mode</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>Teste de Ícones</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 2rem;">
+                <i class="fas fa-calendar" style="color: #3b82f6;"></i>
+                <i class="fas fa-users" style="color: #10b981;"></i>
+                <i class="fas fa-bell" style="color: #f59e0b;"></i>
+                <i class="fas fa-shield-alt" style="color: #ef4444;"></i>
+                <i class="fas fa-mobile-alt" style="color: #8b5cf6;"></i>
+            </div>
         </div>
     </div>
     
@@ -95,9 +177,19 @@
         function updateStatus() {
             const isActive = window.darkModeManager ? window.darkModeManager.isActive() : false;
             const bodyClass = document.body.className;
+            const localStorageValue = localStorage.getItem('darkMode');
             
-            document.getElementById('darkModeStatus').textContent = isActive ? 'Sim' : 'Não';
+            document.getElementById('darkModeStatus').textContent = isActive ? 'ATIVO' : 'INATIVO';
             document.getElementById('bodyClass').textContent = bodyClass || 'Nenhuma';
+            document.getElementById('localStorageValue').textContent = localStorageValue || 'null';
+            
+            // Atualizar indicador visual
+            const indicator = document.getElementById('statusIndicator');
+            if (isActive) {
+                indicator.className = 'status-indicator status-active';
+            } else {
+                indicator.className = 'status-indicator status-inactive';
+            }
         }
         
         // Atualiza o status quando o dark mode mudar
@@ -107,6 +199,9 @@
             // Observa mudanças na classe do body
             const observer = new MutationObserver(updateStatus);
             observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            
+            // Atualizar a cada segundo para garantir sincronização
+            setInterval(updateStatus, 1000);
         });
     </script>
 </body>

@@ -7,6 +7,8 @@ class Calendar {
         this.events = [];
         this.currentView = 'month';
         this.selectedEvent = null;
+        this.currentUserId = (window && window.CURRENT_USER_ID) ? String(window.CURRENT_USER_ID) : 'guest';
+        this.storageKey = `calendarEvents_${this.currentUserId}`;
         
         this.init();
     }
@@ -50,9 +52,7 @@ class Calendar {
             this.closeNewEventModal();
         });
 
-        document.getElementById('saveEvent').addEventListener('click', () => {
-            this.saveNewEvent();
-        });
+        // O clique em salvar é configurado ao abrir o modal (novo/editar)
 
         // Fechar painel de eventos
         document.getElementById('closePanel').addEventListener('click', () => {
@@ -66,72 +66,57 @@ class Calendar {
             }
         });
 
-        // Botão de deletar evento
+        // Impedir submissão padrão do formulário (Enter) para evitar criação indevida
+        const form = document.getElementById('newEventForm');
+        if (form) {
+            form.addEventListener('submit', (e) => e.preventDefault());
+        }
+
+        // Botão de deletar evento (delegação com closest para cobrir o ícone interno)
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-event')) {
-                const eventId = parseInt(e.target.dataset.eventId);
+            const btn = e.target.closest('.delete-event');
+            if (btn) {
+                const eventId = parseInt(btn.dataset.eventId);
                 this.deleteEvent(eventId);
             }
         });
     }
 
-    loadEvents() {
-        // Carregar eventos do localStorage ou API
-        const savedEvents = localStorage.getItem('calendarEvents');
-        if (savedEvents) {
-            this.events = JSON.parse(savedEvents);
-        } else {
-            // Eventos de exemplo para microempresários
-            this.events = [
-                {
-                    id: 1,
-                    client: 'João Silva',
-                    phone: '(11) 99999-9999',
-                    email: 'joao@email.com',
-                    serviceType: 'Corte de Cabelo',
-                    serviceDescription: 'Corte masculino moderno com acabamento na nuca',
-                    date: '2025-01-15',
-                    time: '14:00',
-                    duration: 60,
-                    value: 45.00,
-                    status: 'confirmed',
-                    notes: 'Cliente preferência por corte mais curto'
-                },
-                {
-                    id: 2,
-                    client: 'Maria Santos',
-                    phone: '(11) 88888-8888',
-                    email: 'maria@email.com',
-                    serviceType: 'Manicure Completa',
-                    serviceDescription: 'Aplicação de esmalte gel com decoração',
-                    date: '2025-01-20',
-                    time: '10:30',
-                    duration: 90,
-                    value: 35.00,
-                    status: 'pending',
-                    notes: 'Primeira vez no salão'
-                },
-                {
-                    id: 3,
-                    client: 'Pedro Costa',
-                    phone: '(11) 77777-7777',
-                    email: 'pedro@email.com',
-                    serviceType: 'Consulta Técnica',
-                    serviceDescription: 'Avaliação de equipamento e orçamento',
-                    date: '2025-01-22',
-                    time: '16:00',
-                    duration: 45,
-                    value: 80.00,
-                    status: 'confirmed',
-                    notes: 'Cliente corporativo'
-                }
-            ];
-            this.saveEvents();
+    async loadEvents() {
+        // Buscar do backend
+        try {
+            const resp = await fetch('agendamentos_api.php', { credentials: 'same-origin' });
+            if (!resp.ok) throw new Error('Falha ao carregar agendamentos');
+            const data = await resp.json();
+            if (data && data.success) {
+                // Normaliza estrutura para o frontend
+                this.events = (data.data || []).map(row => ({
+                    id: Number(row.id),
+                    client: row.client,
+                    phone: row.phone,
+                    email: row.email || '',
+                    serviceType: row.service_type,
+                    serviceDescription: row.service_description || '',
+                    date: row.date,
+                    time: row.time,
+                    duration: Number(row.duration || 60),
+                    value: Number(row.value || 0),
+                    status: row.status || 'pending',
+                    notes: row.notes || '',
+                    ownerUserId: String(row.owner_user_id)
+                }));
+            } else {
+                this.events = [];
+            }
+        } catch (e) {
+            this.events = [];
+            console.error(e);
+            this.showNotification('Erro ao carregar agendamentos.', 'error');
         }
     }
 
     saveEvents() {
-        localStorage.setItem('calendarEvents', JSON.stringify(this.events));
+        // Não utilizado com backend, mantido por compatibilidade se necessário
     }
 
     previousMonth() {
@@ -253,6 +238,8 @@ class Calendar {
         `;
         
         eventElement.addEventListener('click', (e) => {
+            // Não abrir painel se o clique foi no botão de deletar
+            if (e.target.closest('.delete-event')) return;
             e.stopPropagation();
             this.showEventPanel(event);
         });
@@ -290,21 +277,23 @@ class Calendar {
 
     showEventPanel(event) {
         const panel = document.getElementById('eventPanel');
+        this.selectedEvent = event;
         
-        // Atualizar informações do evento
-        document.getElementById('eventClient').textContent = event.client;
-        document.getElementById('eventPhone').textContent = event.phone;
-        document.getElementById('eventServiceType').textContent = event.serviceType;
-        document.getElementById('eventServiceDescription').textContent = event.serviceDescription || 'Não informado';
-        document.getElementById('eventDate').textContent = this.formatDateForDisplay(event.date);
-        document.getElementById('eventTime').textContent = event.time;
-        document.getElementById('eventValue').textContent = `R$ ${event.value.toFixed(2)}`;
-        document.getElementById('eventStatus').textContent = this.getStatusText(event.status);
-        document.getElementById('eventStatus').className = `status-badge ${event.status}`;
-        document.getElementById('eventNotes').textContent = event.notes || 'Nenhuma observação';
+        // Atualizar informações do evento escopando pelo painel (evita conflito com IDs no formulário)
+        panel.querySelector('#eventClient').textContent = event.client;
+        panel.querySelector('#eventPhone').textContent = event.phone;
+        panel.querySelector('#eventServiceType').textContent = event.serviceType;
+        panel.querySelector('#eventServiceDescription').textContent = event.serviceDescription || 'Não informado';
+        panel.querySelector('#eventDate').textContent = this.formatDateForDisplay(event.date);
+        panel.querySelector('#eventTime').textContent = event.time;
+        panel.querySelector('#eventValue').textContent = `R$ ${Number(event.value || 0).toFixed(2)}`;
+        const statusBadge = panel.querySelector('#eventStatus');
+        statusBadge.textContent = this.getStatusText(event.status);
+        statusBadge.className = `status-badge ${this.normalizeStatusCss(event.status)}`;
+        panel.querySelector('#eventNotes').textContent = event.notes || 'Nenhuma observação';
         
         // Atualizar botões de ação
-        const actionsContainer = document.querySelector('.event-actions');
+        const actionsContainer = panel.querySelector('.event-actions');
         if (actionsContainer) {
             actionsContainer.innerHTML = `
                 <button class="btn btn-outline" onclick="calendar.editEvent(${event.id})">
@@ -322,11 +311,12 @@ class Calendar {
             `;
         }
         
-        panel.classList.add('show');
+        panel.classList.add('active');
     }
 
     closeEventPanel() {
-        document.getElementById('eventPanel').classList.remove('active');
+        const panel = document.getElementById('eventPanel');
+        panel.classList.remove('active', 'open', 'show');
         this.selectedEvent = null;
     }
 
@@ -335,7 +325,7 @@ class Calendar {
         modal.classList.add('show');
         
         // Resetar formulário
-        document.getElementById('newEventForm').reset();
+        modal.querySelector('#newEventForm').reset();
         
         // Resetar botão para "Salvar"
         const saveButton = document.getElementById('saveEvent');
@@ -344,13 +334,13 @@ class Calendar {
         
         // Definir data atual como padrão
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('eventDate').value = today;
+        modal.querySelector('#eventDate').value = today;
         
         // Definir horário atual + 1 hora como padrão
         const now = new Date();
         now.setHours(now.getHours() + 1);
         const timeString = now.toTimeString().slice(0, 5);
-        document.getElementById('eventTime').value = timeString;
+        modal.querySelector('#eventTime').value = timeString;
     }
 
     closeNewEventModal() {
@@ -358,7 +348,7 @@ class Calendar {
         modal.classList.remove('show');
         
         // Limpar formulário
-        document.getElementById('newEventForm').reset();
+        modal.querySelector('#newEventForm').reset();
         
         // Resetar botão
         const saveButton = document.getElementById('saveEvent');
@@ -366,7 +356,7 @@ class Calendar {
         saveButton.onclick = () => this.saveNewEvent();
     }
 
-    saveNewEvent() {
+    async saveNewEvent() {
         const form = document.getElementById('newEventForm');
         const formData = new FormData(form);
         
@@ -379,7 +369,7 @@ class Calendar {
         const eventTime = formData.get('eventTime');
         const duration = parseInt(formData.get('eventDuration')) || 60;
         const value = parseFloat(formData.get('eventValue')) || 0.00;
-        const status = formData.get('eventStatus');
+        const status = this.normalizeStatusCss(formData.get('eventStatus'));
         const notes = formData.get('eventNotes').trim();
         
         if (!clientName || !clientPhone || !serviceType || !eventDate || !eventTime) {
@@ -387,24 +377,37 @@ class Calendar {
             return;
         }
         
-        // Criar novo evento
-        const newEvent = {
-            id: Date.now(),
-            client: clientName,
-            phone: clientPhone,
-            email: clientEmail,
-            serviceType: serviceType,
-            serviceDescription: serviceDescription,
-            date: eventDate,
-            time: eventTime,
-            duration: duration,
-            value: value,
-            status: status,
-            notes: notes
-        };
-        
-        this.events.push(newEvent);
-        this.saveEvents();
+        // Salvar no backend
+        try {
+            const resp = await fetch('agendamentos_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    action: 'create',
+                    client: clientName,
+                    phone: clientPhone,
+                    email: clientEmail,
+                    serviceType: serviceType,
+                    serviceDescription: serviceDescription,
+                    date: eventDate,
+                    time: eventTime,
+                    duration: duration,
+                    value: value,
+                    status: status,
+                    notes: notes
+                })
+            });
+            if (!resp.ok) throw new Error('Falha ao criar agendamento');
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Erro ao criar');
+        } catch (e) {
+            console.error(e);
+            this.showNotification('Erro ao criar agendamento.', 'error');
+            return;
+        }
+
+        await this.loadEvents();
         this.renderCalendar();
         this.closeNewEventModal();
         this.showNotification('Agendamento criado com sucesso!', 'success');
@@ -416,75 +419,118 @@ class Calendar {
     editEvent(eventId) {
         const event = this.events.find(e => e.id === eventId);
         if (!event) return;
+        if (event.ownerUserId && event.ownerUserId !== this.currentUserId) {
+            this.showNotification('Você não pode editar agendamento de outro profissional.', 'error');
+            return;
+        }
         
-        // Preencher formulário com dados do evento
-        document.getElementById('clientName').value = event.client;
-        document.getElementById('clientPhone').value = event.phone;
-        document.getElementById('clientEmail').value = event.email || '';
-        document.getElementById('serviceType').value = event.serviceType;
-        document.getElementById('serviceDescription').value = event.serviceDescription || '';
-        document.getElementById('eventDate').value = event.date;
-        document.getElementById('eventTime').value = event.time;
-        document.getElementById('eventDuration').value = event.duration || 60;
-        document.getElementById('eventValue').value = event.value || 0.00;
-        document.getElementById('eventStatus').value = event.status;
-        document.getElementById('eventNotes').value = event.notes || '';
+        // Abrir modal para edição sem resetar conteúdo
+        const modal = document.getElementById('newEventModal');
+        modal.classList.add('show');
+
+        // Preencher formulário com dados do evento (escopando pelo modal)
+        modal.querySelector('#clientName').value = event.client;
+        modal.querySelector('#clientPhone').value = event.phone;
+        modal.querySelector('#clientEmail').value = event.email || '';
+        modal.querySelector('#serviceType').value = event.serviceType;
+        modal.querySelector('#serviceDescription').value = event.serviceDescription || '';
+        modal.querySelector('#eventDate').value = event.date;
+        modal.querySelector('#eventTime').value = event.time;
+        modal.querySelector('#eventDuration').value = event.duration || 60;
+        modal.querySelector('#eventValue').value = event.value || 0.00;
+        modal.querySelector('#eventStatus').value = this.mapStatusToFormValue(event.status);
+        modal.querySelector('#eventNotes').value = event.notes || '';
         
         // Mudar botão para "Atualizar"
         const saveButton = document.getElementById('saveEvent');
         saveButton.textContent = 'Atualizar Agendamento';
         saveButton.onclick = () => this.updateEvent(eventId);
-        
-        this.openNewEventModal();
     }
 
-    updateEvent(eventId) {
+    async updateEvent(eventId) {
         const form = document.getElementById('newEventForm');
         const formData = new FormData(form);
         
+        // Validação dos campos obrigatórios
+        const clientName = (formData.get('clientName') || '').trim();
+        const clientPhone = (formData.get('clientPhone') || '').trim();
+        const serviceType = (formData.get('serviceType') || '').trim();
+        const eventDate = formData.get('eventDate');
+        const eventTime = formData.get('eventTime');
+        if (!clientName || !clientPhone || !serviceType || !eventDate || !eventTime) {
+            this.showNotification('Por favor, preencha todos os campos obrigatórios!', 'error');
+            return;
+        }
+
         const updatedEvent = {
-            client: formData.get('clientName').trim(),
-            phone: formData.get('clientPhone').trim(),
-            email: formData.get('clientEmail').trim(),
-            serviceType: formData.get('serviceType').trim(),
-            serviceDescription: formData.get('serviceDescription').trim(),
-            date: formData.get('eventDate'),
-            time: formData.get('eventTime'),
+            client: clientName,
+            phone: clientPhone,
+            email: (formData.get('clientEmail') || '').trim(),
+            serviceType: serviceType,
+            serviceDescription: (formData.get('serviceDescription') || '').trim(),
+            date: eventDate,
+            time: eventTime,
             duration: parseInt(formData.get('eventDuration')) || 60,
             value: parseFloat(formData.get('eventValue')) || 0.00,
-            status: formData.get('eventStatus'),
+            status: this.normalizeStatusCss(formData.get('eventStatus')),
             notes: formData.get('eventNotes').trim()
         };
         
-        // Atualizar evento existente
-        const eventIndex = this.events.findIndex(e => e.id === eventId);
-        if (eventIndex !== -1) {
-            this.events[eventIndex] = { ...this.events[eventIndex], ...updatedEvent };
-            this.saveEvents();
-            this.renderCalendar();
-            this.closeNewEventModal();
-            this.showNotification('Agendamento atualizado com sucesso!', 'success');
-            
-            // Resetar botão
-            const saveButton = document.getElementById('saveEvent');
-            saveButton.textContent = 'Salvar Agendamento';
-            saveButton.onclick = () => this.saveNewEvent();
-            
-            // Limpar formulário
-            form.reset();
+        // Atualizar no backend
+        try {
+            const resp = await fetch('agendamentos_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ action: 'update', id: eventId, ...updatedEvent })
+            });
+            if (!resp.ok) throw new Error('Falha ao atualizar agendamento');
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Erro ao atualizar');
+        } catch (e) {
+            console.error(e);
+            this.showNotification('Erro ao atualizar agendamento.', 'error');
+            return;
         }
+
+        await this.loadEvents();
+        this.renderCalendar();
+        this.closeNewEventModal();
+        this.showNotification('Agendamento atualizado com sucesso!', 'success');
+        
+        // Resetar botão
+        const saveButton = document.getElementById('saveEvent');
+        saveButton.textContent = 'Salvar Agendamento';
+        saveButton.onclick = () => this.saveNewEvent();
+        
+        // Limpar formulário
+        form.reset();
     }
 
-    deleteEvent(eventId) {
+    async deleteEvent(eventId) {
         if (!confirm('Tem certeza que deseja deletar este agendamento?')) {
             return;
         }
         
-        this.events = this.events.filter(e => e.id !== eventId);
-        this.saveEvents();
+        try {
+            const resp = await fetch('agendamentos_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ action: 'delete', id: eventId })
+            });
+            if (!resp.ok) throw new Error('Falha ao deletar agendamento');
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Erro ao deletar');
+        } catch (e) {
+            console.error(e);
+            this.showNotification('Erro ao deletar agendamento.', 'error');
+            return;
+        }
+
+        await this.loadEvents();
         this.renderCalendar();
         this.closeEventPanel();
-        
         this.showNotification('Agendamento deletado com sucesso!', 'success');
     }
 
@@ -504,9 +550,35 @@ class Calendar {
         const statusMap = {
             'confirmed': 'Confirmado',
             'pending': 'Pendente',
-            'cancelled': 'Cancelado'
+            'cancelled': 'Cancelado',
+            'confirmado': 'Confirmado',
+            'pendente': 'Pendente',
+            'cancelado': 'Cancelado',
+            'agendado': 'Pendente'
         };
         return statusMap[status] || 'Pendente';
+    }
+
+    normalizeStatusCss(status) {
+        const map = {
+            'confirmed': 'confirmed',
+            'pending': 'pending',
+            'cancelled': 'cancelled',
+            'confirmado': 'confirmed',
+            'pendente': 'pending',
+            'agendado': 'pending',
+            'cancelado': 'cancelled'
+        };
+        return map[status] || 'pending';
+    }
+
+    mapStatusToFormValue(status) {
+        const map = {
+            'confirmed': 'confirmado',
+            'pending': 'pendente',
+            'cancelled': 'pendente'
+        };
+        return map[status] || 'pendente';
     }
 
     showNotification(message, type = 'info') {

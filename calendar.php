@@ -17,8 +17,9 @@ $currentUser = getCurrentUser();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Agendamento - Calendário</title>
-    <link rel="stylesheet" href="calendar.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="dark-mode.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -50,13 +51,13 @@ $currentUser = getCurrentUser();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="relatorios.php" class="nav-link">
                             <i class="fas fa-chart-bar"></i>
                             <span>Relatórios</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="configuracoes.php" class="nav-link">
                             <i class="fas fa-cog"></i>
                             <span>Configurações</span>
                         </a>
@@ -280,12 +281,52 @@ $currentUser = getCurrentUser();
         </div>
     </div>
 
+    <script>
+        window.CURRENT_USER_ID = <?php echo json_encode($currentUser['id_usuario']); ?>;
+    </script>
     <script src="calendar.js"></script>
-    
-    <!-- Inclui o gerenciador de dark mode -->
-    <script src="dark-mode.js"></script>
     
     <!-- Inclui o sistema de formatação automática -->
     <script src="formatters.js"></script>
+
+    <!-- Fixes específicos desta página: clique para expandir, validação e deletar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Delegação para deletar (cobre clique no ícone dentro do botão)
+            document.addEventListener('click', function (e) {
+                var deleteBtn = e.target.closest('.delete-event');
+                if (deleteBtn) {
+                    var eventId = parseInt(deleteBtn.dataset.eventId);
+                    if (!isNaN(eventId) && window.calendar) {
+                        calendar.deleteEvent(eventId);
+                    }
+                    return;
+                }
+            });
+
+            // Delegação para abrir painel ao clicar no agendamento, sem conflitar com deletar
+            document.addEventListener('click', function (e) {
+                // Evitar abrir painel quando clicar no botão de deletar
+                if (e.target.closest('.delete-event')) return;
+
+                var eventItem = e.target.closest('.event-item');
+                if (eventItem && window.calendar) {
+                    var eventId = parseInt(eventItem.dataset.eventId);
+                    if (!isNaN(eventId)) {
+                        var ev = (calendar.events || []).find(function (x) { return x.id === eventId; });
+                        if (ev) {
+                            calendar.showEventPanel(ev);
+                        }
+                    }
+                }
+            });
+
+            // Impedir submit nativo do form (Enter) e reforçar validação manual
+            var form = document.getElementById('newEventForm');
+            if (form) {
+                form.addEventListener('submit', function (ev) { ev.preventDefault(); });
+            }
+        });
+    </script>
 </body>
 </html>

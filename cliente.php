@@ -18,6 +18,7 @@ $currentUser = getCurrentUser();
     <title>Sistema de Agendamento - Clientes</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="dark-mode.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -25,7 +26,7 @@ $currentUser = getCurrentUser();
         <aside class="sidebar">
             <div class="sidebar-header">
                 <a href="index.php" class="logo">
-                    <i class="fas fa-calendar logo-icon"></i>
+                    <div class="logo-icon"><i class="fas fa-calendar"></i></div>
                     <span class="logo-text">Sistema de Agendamento</span>
                 </a>
             </div>
@@ -33,25 +34,25 @@ $currentUser = getCurrentUser();
             <nav class="sidebar-nav">
                 <ul class="nav-list">
                     <li class="nav-item">
-                        <a href="calendar.php" class="nav-link active">
+                        <a href="calendar.php" class="nav-link">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Calendário</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="cliente.php" class="nav-link">
+                        <a href="cliente.php" class="nav-link active">
                             <i class="fas fa-users"></i>
                             <span>Clientes</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="relatorios.php" class="nav-link">
                             <i class="fas fa-chart-bar"></i>
                             <span>Relatórios</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="configuracoes.php" class="nav-link">
                             <i class="fas fa-cog"></i>
                             <span>Configurações</span>
                         </a>
