@@ -39,6 +39,14 @@ class Calendar {
             });
         });
 
+        // Botão de Exportar
+        const exportBtn = document.getElementById('exportCalendarBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportEventsToCsv();
+            });
+        }
+
         // Modal de novo evento
         const newEventBtn = document.querySelector('#newEventBtn');
         if (newEventBtn) {
@@ -90,15 +98,6 @@ class Calendar {
             clientNameInput.addEventListener('change', (e) => this.handleClientSelection(e.target.value));
         }
         
-        // Listener para formatar telefone no input do agendamento (REMOVIDO, POIS SERÁ PREENCHIDO)
-        /*
-        const clientPhoneInput = document.getElementById('clientPhone');
-        if (clientPhoneInput) {
-            clientPhoneInput.addEventListener('input', (e) => {
-                e.target.value = this.formatPhoneNumberInput(e.target.value);
-            });
-        }
-        */
     }
 
     async loadEvents() {
@@ -812,7 +811,51 @@ class Calendar {
         return phoneNumber;
     }
 
-    // REMOVIDA: formatPhoneNumberInput(value) { ... }
+    // Função para exportar eventos como CSV
+    exportEventsToCsv() {
+        if (this.events.length === 0) {
+            this.showNotification('Nenhum agendamento para exportar.', 'info');
+            return;
+        }
+
+        const headers = [
+            'ID', 'Cliente', 'Telefone', 'Email', 'Tipo de Serviço', 
+            'Descrição do Serviço', 'Data', 'Horário', 'Duração (min)', 
+            'Valor', 'Status', 'Observações'
+        ];
+        
+        const rows = this.events.map(event => [
+            event.id,
+            `"${event.client.replace(/"/g, '')}"`, // Escapar aspas duplas
+            `"${event.phone.replace(/"/g, '')}"`, 
+            `"${event.email.replace(/"/g, '')}"`, 
+            `"${event.serviceType.replace(/"/g, '')}"`, 
+            `"${event.serviceDescription.replace(/"/g, '')}"`, 
+            event.date,
+            event.time,
+            event.duration,
+            event.value.toFixed(2).replace('.', ','), // Formatar valor
+            this.getStatusText(event.status),
+            `"${event.notes.replace(/"/g, '')}"` 
+        ]);
+
+        const csvContent = [
+            headers.join(';'), // Usar ponto e vírgula como delimitador para compatibilidade com Excel em PT-BR
+            ...rows.map(row => row.join(';'))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `agendamentos_mecalendar_${this.formatDate(new Date()).replace(/-/g, '')}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('Agendamentos exportados com sucesso!', 'success');
+    }
 }
 
 // Adicionar estilos CSS para animações e botão de deletar

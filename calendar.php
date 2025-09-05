@@ -39,7 +39,7 @@ $currentUser = getCurrentUser();
                         <i class="fas fa-plus"></i>
                         <span data-translate="new_appointment">Novo Agendamento</span>
                     </button>
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" id="exportCalendarBtn">
                         <i class="fas fa-download"></i>
                         <span data-translate="export">Exportar</span>
                     </button>
