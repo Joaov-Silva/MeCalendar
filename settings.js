@@ -73,7 +73,14 @@
 		const nameInp = getEl('nameInput');
 		const emailInp = getEl('emailInput');
 
-		if (langSel) langSel.addEventListener('change', () => saveSettings({ language: langSel.value }));
+		if (langSel) langSel.addEventListener('change', () => {
+			const newLang = langSel.value;
+			saveSettings({ language: newLang });
+			// Aplicar mudança de idioma imediatamente
+			if (window.setLanguage) {
+				window.setLanguage(newLang);
+			}
+		});
 		if (tzSel) tzSel.addEventListener('change', () => saveSettings({ timezone: tzSel.value }));
 		if (themeSel) themeSel.addEventListener('change', () => { const theme = themeSel.value; saveSettings({ theme }); applyTheme(theme); });
 		if (fontSel) fontSel.addEventListener('change', () => { const fontSize = fontSel.value; saveSettings({ fontSize }); applyFontSize(fontSize); });

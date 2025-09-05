@@ -11,8 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$confirmar = $_POST['confirmar'] ?? '';
 	$cpf = preg_replace('/[^0-9]/', '', $_POST['cpf'] ?? '');
 	$telefone = trim($_POST['telefone'] ?? '');
-	$tipo = $_POST['tipo'] ?? 'cliente';
-
 	if ($nome === '' || $email === '' || $senha === '' || $confirmar === '' || $cpf === '') {
 		$erro = 'Preencha todos os campos obrigatórios.';
 	} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -23,41 +21,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$erro = 'As senhas não coincidem.';
 	} elseif (strlen($cpf) !== 11) {
 		$erro = 'CPF inválido.';
+	} else {
+		try {
+			// Verifica duplicidade de email
+			$stmt = $pdo->prepare('SELECT 1 FROM usuario WHERE email = ?');
+			$stmt->execute([$email]);
+			if ($stmt->fetch()) {
+				$erro = 'Já existe uma conta com este email.';
 			} else {
-			try {
-				// Primeiro, busca o ID do tipo de usuário
-				$stmt = $pdo->prepare('SELECT id_tipo FROM tipo_usuario WHERE nome = ?');
-				$stmt->execute([$tipo]);
-				$tipo_usuario = $stmt->fetch();
-				
-				if (!$tipo_usuario) {
-					$erro = 'Tipo de usuário inválido.';
+				// Verifica duplicidade de CPF
+				$stmt = $pdo->prepare('SELECT 1 FROM usuario WHERE cpf = ?');
+				$stmt->execute([$cpf]);
+				if ($stmt->fetch()) {
+					$erro = 'CPF já cadastrado.';
 				} else {
-					$tipo_usuario_id = $tipo_usuario['id_tipo'];
-					
-					// Verifica duplicidade de email
-					$stmt = $pdo->prepare('SELECT 1 FROM usuario WHERE email = ?');
-					$stmt->execute([$email]);
-					if ($stmt->fetch()) {
-						$erro = 'Já existe uma conta com este email.';
-					} else {
-						// Verifica duplicidade de CPF
-						$stmt = $pdo->prepare('SELECT 1 FROM usuario WHERE cpf = ?');
-						$stmt->execute([$cpf]);
-						if ($stmt->fetch()) {
-							$erro = 'CPF já cadastrado.';
-						} else {
-							$hash = password_hash($senha, PASSWORD_DEFAULT);
+					$hash = password_hash($senha, PASSWORD_DEFAULT);
 
-							// Insere o usuário com o tipo_usuario_id correto
-							$stmt = $pdo->prepare('INSERT INTO usuario (tipo_usuario_id, nome, email, senha, cpf, telefone) VALUES (?, ?, ?, ?, ?, ?)');
-							$stmt->execute([$tipo_usuario_id, $nome, $email, $hash, $cpf, $telefone]);
+					// Insere o usuário (apenas proprietários)
+					$stmt = $pdo->prepare('INSERT INTO usuario (nome, email, senha, cpf, telefone) VALUES (?, ?, ?, ?, ?)');
+					$stmt->execute([$nome, $email, $hash, $cpf, $telefone]);
 
-							$sucesso = 'Conta criada com sucesso! Você será redirecionado para o login.';
-							header('refresh:2;url=login.php');
-						}
-					}
+					$sucesso = 'Conta criada com sucesso! Você será redirecionado para o login.';
+					header('refresh:2;url=login.php');
 				}
+			}
 		} catch (PDOException $e) {
 			$erro = 'Erro ao cadastrar: ' . $e->getMessage();
 		}
@@ -92,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				<div class="auth-header">
 					<div class="logo-icon"><i class="fas fa-calendar"></i></div>
 					<div class="auth-title">Criar conta</div>
-					<p class="auth-subtitle">Preencha seus dados para criar sua conta. Se for profissional, selecione a opção abaixo.</p>
+					<p class="auth-subtitle">Preencha seus dados para criar sua conta de proprietário.</p>
 				</div>
 
 				<?php if ($erro): ?>
@@ -103,17 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				<?php endif; ?>
 
 				<form method="POST" action="">
-					<div class="form-group">
-						<label class="label">Tipo de conta</label>
-						<div style="display:flex; gap: .75rem;">
-							<label style="display:flex; align-items:center; gap:.5rem;">
-								<input type="radio" name="tipo" value="cliente" <?php echo (($tipo ?? 'cliente')==='cliente')?'checked':''; ?>> Cliente
-							</label>
-							<label style="display:flex; align-items:center; gap:.5rem;">
-								<input type="radio" name="tipo" value="profissional" <?php echo (($tipo ?? '')==='profissional')?'checked':''; ?>> Profissional
-							</label>
-						</div>
-					</div>
 
 					<div class="form-row">
 						<div class="form-group">

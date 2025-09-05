@@ -1,13 +1,13 @@
 # Sistema de Agendamento
 
-Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL, focado em demonstrar habilidades de desenvolvimento web full-stack.
+Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL, focado em proprietários de estabelecimentos que precisam gerenciar agendamentos de clientes.
 
 ## 🚀 Funcionalidades
 
-- **Sistema de Autenticação**: Login e cadastro de usuários com diferentes tipos (cliente e profissional)
-- **Gestão de Usuários**: Cadastro, autenticação e controle de sessão
+- **Sistema de Autenticação**: Login e cadastro de proprietários
+- **Gestão de Clientes**: Cadastro e gerenciamento de clientes
 - **Calendário Interativo**: Visualização e gestão de agendamentos
-- **Busca de Serviços**: Sistema de busca com filtros por categoria e localização
+- **Criação de Agendamentos**: Sistema para criar e gerenciar agendamentos
 - **Interface Responsiva**: Design adaptável para todos os dispositivos
 - **Segurança**: Autenticação por token, senhas criptografadas e controle de sessão
 
@@ -51,26 +51,20 @@ Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL,
 
 O sistema utiliza as seguintes tabelas principais:
 
-- `usuario`: Dados dos usuários (clientes e profissionais)
-- `tipo_usuario`: Tipos de usuário (cliente, profissional)
-- `estabelecimento`: Informações dos estabelecimentos
-- `categoria_servico`: Categorias de serviços disponíveis
-- `tipo_servico`: Tipos específicos de serviços
+- `usuario`: Dados dos proprietários
+- `agendamento_front`: Agendamentos dos clientes
+- `clientes`: Dados dos clientes
 - `token_autenticacao`: Tokens para "lembrar-me"
+- `notificacao`: Sistema de notificações
 
 ## 📱 Funcionalidades Principais
 
-### Para Clientes
+### Para Proprietários
 - Cadastro e login
-- Busca de serviços por categoria e localização
-- Visualização de seus agendamentos
-- Sistema de agendamentos
-
-### Para Profissionais
-- Cadastro e login
-- Gestão de estabelecimento
+- Gestão de clientes
+- Criação de agendamentos
 - Calendário de agendamentos
-- Dashboard de atividades
+- Relatórios e estatísticas
 
 ## 🔒 Segurança
 
@@ -98,22 +92,25 @@ O sistema utiliza as seguintes tabelas principais:
 ├── navbar.php             # Navegação do sistema
 ├── footer.php             # Rodapé do sistema
 ├── calendar.php           # Página do calendário
-├── buscar_servicos.php    # Busca de serviços
+├── cliente.php            # Gestão de clientes
+├── relatorios.php         # Relatórios e estatísticas
 ├── logout.php             # Logout do sistema
 ├── api.php                # API REST simples
+├── api/clients.php        # API para gestão de clientes
 ├── styles.css             # Estilos principais
-├── calendar.css           # Estilos do calendário
 ├── script.js              # JavaScript principal
 ├── calendar.js            # JavaScript do calendário
+├── clients.js             # JavaScript para gestão de clientes
 └── banco.sql              # Script de criação do banco
 ```
 
 ## 🚀 Como Usar
 
-1. **Primeiro acesso**: Crie uma conta na página de cadastro
+1. **Primeiro acesso**: Crie uma conta de proprietário na página de cadastro
 2. **Login**: Acesse o sistema com suas credenciais
-3. **Explorar**: Navegue pelas funcionalidades disponíveis
-4. **Testar**: Experimente o sistema de agendamentos e busca
+3. **Gerenciar clientes**: Cadastre e gerencie seus clientes
+4. **Criar agendamentos**: Use o calendário para criar e gerenciar agendamentos
+5. **Acompanhar relatórios**: Visualize estatísticas e relatórios dos seus atendimentos
 
 ## 🔧 Personalização
 

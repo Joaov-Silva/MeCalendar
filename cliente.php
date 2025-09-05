@@ -36,25 +36,25 @@ $currentUser = getCurrentUser();
                     <li class="nav-item">
                         <a href="calendar.php" class="nav-link">
                             <i class="fas fa-calendar-alt"></i>
-                            <span>Calendário</span>
+                            <span data-translate="calendar">Calendário</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="cliente.php" class="nav-link active">
                             <i class="fas fa-users"></i>
-                            <span>Clientes</span>
+                            <span data-translate="clients">Clientes</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="relatorios.php" class="nav-link">
                             <i class="fas fa-chart-bar"></i>
-                            <span>Relatórios</span>
+                            <span data-translate="reports">Relatórios</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="configuracoes.php" class="nav-link">
                             <i class="fas fa-cog"></i>
-                            <span>Configurações</span>
+                            <span data-translate="settings">Configurações</span>
                         </a>
                     </li>
                 </ul>
@@ -64,7 +64,7 @@ $currentUser = getCurrentUser();
             <div class="dark-mode-section">
                 <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
                     <i class="fas fa-moon" id="darkModeIcon"></i>
-                    <span>Modo Escuro</span>
+                    <span data-translate="dark_mode">Modo Escuro</span>
                 </button>
             </div>
 
@@ -75,7 +75,7 @@ $currentUser = getCurrentUser();
                     </div>
                     <div class="user-details">
                         <span class="user-name"><?= htmlspecialchars($currentUser['nome']); ?></span>
-                        <span class="user-role"><?= ucfirst($currentUser['tipo_nome']); ?></span>
+                        <span class="user-role" data-translate="owner">Proprietário</span>
                     </div>
                 </div>
             </div>
@@ -85,13 +85,13 @@ $currentUser = getCurrentUser();
         <main class="main-content">
             <header class="main-header">
                 <div class="header-left">
-                    <h1 class="page-title">Clientes</h1>
-                    <p class="page-subtitle">Gerencie sua base de clientes</p>
+                    <h1 class="page-title" data-translate="clients">Clientes</h1>
+                    <p class="page-subtitle" data-translate="manage_clients">Gerencie sua base de clientes</p>
                 </div>
                 <div class="header-right">
                     <button class="btn btn-primary" id="newClientBtn">
                         <i class="fas fa-user-plus"></i>
-                        Novo Cliente
+                        <span data-translate="new_client">Novo Cliente</span>
                     </button>
                 </div>
             </header>
@@ -99,7 +99,7 @@ $currentUser = getCurrentUser();
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Buscar clientes...">
+                    <input type="text" id="searchInput" data-translate-placeholder="search_clients" placeholder="Buscar clientes...">
                     <button class="search-btn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -119,7 +119,7 @@ $currentUser = getCurrentUser();
     <div class="modal" id="clientModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">Novo Cliente</h3>
+                <h3 id="modalTitle" data-translate="new_client">Novo Cliente</h3>
                 <button class="close-btn" id="closeModal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -129,44 +129,44 @@ $currentUser = getCurrentUser();
                     <input type="hidden" id="clientId" name="clientId">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="nome">Nome Completo *</label>
+                            <label for="nome" data-translate="full_name">Nome Completo *</label>
                             <input type="text" id="nome" name="nome" required>
                         </div>
                         <div class="form-group">
-                            <label for="telefone">Telefone *</label>
+                            <label for="telefone" data-translate="phone">Telefone *</label>
                             <input type="tel" id="telefone" name="telefone" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="email">Email</label>
+                            <label for="email" data-translate="email">Email</label>
                             <input type="email" id="email" name="email">
                         </div>
                         <div class="form-group">
-                            <label for="dataNascimento">Data de Nascimento</label>
+                            <label for="dataNascimento" data-translate="birth_date">Data de Nascimento</label>
                             <input type="date" id="dataNascimento" name="dataNascimento">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="endereco">Endereço</label>
+                        <label for="endereco" data-translate="address">Endereço</label>
                         <input type="text" id="endereco" name="endereco">
                     </div>
                     <div class="form-group">
-                        <label for="observacoes">Observações</label>
+                        <label for="observacoes" data-translate="observations">Observações</label>
                         <textarea id="observacoes" name="observacoes" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="status">Status</label>
+                        <label for="status" data-translate="status">Status</label>
                         <select id="status" name="status">
-                            <option value="ativo">Ativo</option>
-                            <option value="inativo">Inativo</option>
+                            <option value="ativo" data-translate="active">Ativo</option>
+                            <option value="inativo" data-translate="inactive">Inativo</option>
                         </select>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelClient">Cancelar</button>
-                <button class="btn btn-primary" id="saveClient">Salvar Cliente</button>
+                <button class="btn btn-secondary" id="cancelClient" data-translate="cancel">Cancelar</button>
+                <button class="btn btn-primary" id="saveClient" data-translate="save_client">Salvar Cliente</button>
             </div>
         </div>
     </div>
@@ -175,7 +175,7 @@ $currentUser = getCurrentUser();
     <div class="modal" id="clientDetailsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Detalhes do Cliente</h3>
+                <h3 data-translate="client_details">Detalhes do Cliente</h3>
                 <button class="close-btn" id="closeDetailsModal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -216,11 +216,11 @@ $currentUser = getCurrentUser();
             <div class="modal-footer">
                 <button class="btn btn-outline" id="editClient">
                     <i class="fas fa-edit"></i>
-                    Editar
+                    <span data-translate="edit">Editar</span>
                 </button>
                 <button class="btn btn-danger" id="deleteClient">
                     <i class="fas fa-trash"></i>
-                    Excluir
+                    <span data-translate="cancel">Excluir</span>
                 </button>
             </div>
         </div>
@@ -229,7 +229,44 @@ $currentUser = getCurrentUser();
     <!-- Toast Notifications -->
     <div id="toast" class="toast"></div>
 
+    <script src="translations.js"></script>
     <script src="clients.js"></script>
     <script src="dark-mode.js"></script>
+    
+    <script>
+        // Event listeners para modais
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fechar modais
+            document.getElementById('closeModal').addEventListener('click', () => closeModal('clientModal'));
+            document.getElementById('closeDetailsModal').addEventListener('click', () => closeModal('clientDetailsModal'));
+            document.getElementById('cancelClient').addEventListener('click', () => closeModal('clientModal'));
+            
+            // Fechar modal ao clicar fora
+            document.getElementById('clientModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal('clientModal');
+            });
+            document.getElementById('clientDetailsModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal('clientDetailsModal');
+            });
+            
+            // Editar cliente do modal de detalhes
+            document.getElementById('editClient').addEventListener('click', function() {
+                const clientId = this.dataset.clientId;
+                if (clientId) {
+                    editClient(clientId);
+                    closeModal('clientDetailsModal');
+                }
+            });
+            
+            // Deletar cliente do modal de detalhes
+            document.getElementById('deleteClient').addEventListener('click', function() {
+                const clientId = this.dataset.clientId;
+                if (clientId) {
+                    deleteClient(clientId);
+                    closeModal('clientDetailsModal');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

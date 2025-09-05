@@ -65,3 +65,5 @@ try {
 	echo json_encode(['success' => false, 'error' => 'Falha ao atualizar', 'detail' => $e->getMessage()]);
 }
 
+
+

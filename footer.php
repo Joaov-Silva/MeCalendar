@@ -18,7 +18,7 @@
                 <ul class="footer-links">
                     <li><a href="#features">Recursos</a></li>
                     <li><a href="calendar.php">Calendário</a></li>
-                    <li><a href="buscar_servicos.php">Buscar Serviços</a></li>
+                    <li><a href="cliente.php">Clientes</a></li>
                     <li><a href="#">Documentação</a></li>
                 </ul>
             </div>

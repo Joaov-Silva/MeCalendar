@@ -24,10 +24,6 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
                 </button>
                 
                 <?php if (isLoggedIn() && !$isAuthPage): ?>
-                    <?php if (isCliente()): ?>
-                        <a href="buscar_servicos.php" class="nav-link">Buscar Serviços</a>
-                    <?php endif; ?>
-                    
                     <!-- Menu do usuário logado -->
                     <div class="user-menu">
                         <button class="user-menu-btn" onclick="toggleUserMenu()">
@@ -47,7 +43,7 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
                                     <div>
                                         <div class="user-name-large"><?php echo htmlspecialchars($currentUser['nome']); ?></div>
                                         <div class="user-email"><?php echo htmlspecialchars($currentUser['email']); ?></div>
-                                        <div class="user-type"><?php echo ucfirst($currentUser['tipo_nome']); ?></div>
+                                        <div class="user-type">Proprietário</div>
                                     </div>
                                 </div>
                             </div>
@@ -57,18 +53,14 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
                                     <i class="fas fa-user-circle"></i>
                                     Meu Perfil
                                 </a>
-                                <?php if (isCliente()): ?>
-                                    <a href="#" class="dropdown-item" onclick="alert('Funcionalidade de agendamentos será implementada em breve!')">
-                                        <i class="fas fa-calendar-check"></i>
-                                        Meus Agendamentos
-                                    </a>
-                                <?php endif; ?>
-                                <?php if (isProfissional()): ?>
-                                    <a href="#" class="dropdown-item" onclick="alert('Funcionalidade de dashboard será implementada em breve!')">
-                                        <i class="fas fa-chart-line"></i>
-                                        Dashboard
-                                    </a>
-                                <?php endif; ?>
+                                <a href="calendar.php" class="dropdown-item">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Meus Agendamentos
+                                </a>
+                                <a href="relatorios.php" class="dropdown-item">
+                                    <i class="fas fa-chart-line"></i>
+                                    Relatórios
+                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a href="logout.php" class="dropdown-item text-danger">
                                     <i class="fas fa-sign-out-alt"></i>

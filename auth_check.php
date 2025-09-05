@@ -15,27 +15,12 @@ function getCurrentUser() {
     global $pdo;
     
     try {
-        $stmt = $pdo->prepare("SELECT u.*, t.nome as tipo_nome 
-                              FROM usuario u 
-                              INNER JOIN tipo_usuario t ON u.tipo_usuario_id = t.id_tipo 
-                              WHERE u.id_usuario = ?");
+        $stmt = $pdo->prepare("SELECT * FROM usuario WHERE id_usuario = ?");
         $stmt->execute([$_SESSION['usuario_id']]);
         return $stmt->fetch();
     } catch (PDOException $e) {
         return null;
     }
-}
-
-// Função para verificar se é cliente
-function isCliente() {
-    $user = getCurrentUser();
-    return $user && $user['tipo_nome'] === 'cliente';
-}
-
-// Função para verificar se é profissional
-function isProfissional() {
-    $user = getCurrentUser();
-    return $user && $user['tipo_nome'] === 'profissional';
 }
 
 // Função para fazer logout

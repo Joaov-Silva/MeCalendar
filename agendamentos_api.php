@@ -13,25 +13,7 @@ if (!isLoggedIn()) {
 $currentUser = getCurrentUser();
 $currentUserId = (int)$currentUser['id_usuario'];
 
-// Garante que a tabela exista (camada simples para o calendário do front)
-$pdo->exec("CREATE TABLE IF NOT EXISTS agendamento_front (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    owner_user_id INT NOT NULL,
-    client VARCHAR(255) NOT NULL,
-    phone VARCHAR(50) NOT NULL,
-    email VARCHAR(255) NULL,
-    service_type VARCHAR(120) NOT NULL,
-    service_description TEXT NULL,
-    date DATE NOT NULL,
-    time TIME NOT NULL,
-    duration INT DEFAULT 60,
-    value DECIMAL(10,2) DEFAULT 0,
-    status VARCHAR(20) DEFAULT 'pending',
-    notes TEXT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_owner_date (owner_user_id, date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+// A tabela agendamento_front já está definida no banco principal
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -143,5 +125,7 @@ function normalize_status($status) {
     return $map[$status] ?? 'pending';
 }
 ?>
+
+
 
 

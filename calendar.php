@@ -41,25 +41,25 @@ $currentUser = getCurrentUser();
                     <li class="nav-item">
                         <a href="calendar.php" class="nav-link active">
                             <i class="fas fa-calendar-alt"></i>
-                            <span>Calendário</span>
+                            <span data-translate="calendar">Calendário</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="cliente.php" class="nav-link">
                             <i class="fas fa-users"></i>
-                            <span>Clientes</span>
+                            <span data-translate="clients">Clientes</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="relatorios.php" class="nav-link">
                             <i class="fas fa-chart-bar"></i>
-                            <span>Relatórios</span>
+                            <span data-translate="reports">Relatórios</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="configuracoes.php" class="nav-link">
                             <i class="fas fa-cog"></i>
-                            <span>Configurações</span>
+                            <span data-translate="settings">Configurações</span>
                         </a>
                     </li>
                 </ul>
@@ -69,7 +69,7 @@ $currentUser = getCurrentUser();
             <div class="dark-mode-section">
                 <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
                     <i class="fas fa-moon" id="darkModeIcon"></i>
-                    <span>Modo Escuro</span>
+                    <span data-translate="dark_mode">Modo Escuro</span>
                 </button>
             </div>
             
@@ -80,7 +80,7 @@ $currentUser = getCurrentUser();
                     </div>
                     <div class="user-details">
                         <span class="user-name"><?php echo htmlspecialchars($currentUser['nome']); ?></span>
-                        <span class="user-role"><?php echo ucfirst($currentUser['tipo_nome']); ?></span>
+                        <span class="user-role" data-translate="owner">Proprietário</span>
                     </div>
                 </div>
             </div>
@@ -91,17 +91,17 @@ $currentUser = getCurrentUser();
             <!-- Header -->
             <header class="main-header">
                 <div class="header-left">
-                    <h1 class="page-title">Calendário</h1>
-                    <p class="page-subtitle">Gerencie seus agendamentos</p>
+                    <h1 class="page-title" data-translate="calendar">Calendário</h1>
+                    <p class="page-subtitle" data-translate="manage_appointments">Gerencie seus agendamentos</p>
                 </div>
                 <div class="header-right">
                     <button class="btn btn-secondary" id="newEventBtn">
                         <i class="fas fa-plus"></i>
-                        Novo Agendamento
+                        <span data-translate="new_appointment">Novo Agendamento</span>
                     </button>
                     <button class="btn btn-primary">
                         <i class="fas fa-download"></i>
-                        Exportar
+                        <span data-translate="export">Exportar</span>
                     </button>
                 </div>
             </header>
@@ -119,23 +119,18 @@ $currentUser = getCurrentUser();
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
-                    <div class="calendar-views">
-                        <button class="view-btn active" data-view="month">Mês</button>
-                        <button class="view-btn" data-view="week">Semana</button>
-                        <button class="view-btn" data-view="day">Dia</button>
-                    </div>
                 </div>
 
                 <!-- Calendar Grid -->
                 <div class="calendar-grid">
                     <div class="calendar-weekdays">
-                        <div class="weekday">Dom</div>
-                        <div class="weekday">Seg</div>
-                        <div class="weekday">Ter</div>
-                        <div class="weekday">Qua</div>
-                        <div class="weekday">Qui</div>
-                        <div class="weekday">Sex</div>
-                        <div class="weekday">Sáb</div>
+                        <div class="weekday" data-translate="sun">Dom</div>
+                        <div class="weekday" data-translate="mon">Seg</div>
+                        <div class="weekday" data-translate="tue">Ter</div>
+                        <div class="weekday" data-translate="wed">Qua</div>
+                        <div class="weekday" data-translate="thu">Qui</div>
+                        <div class="weekday" data-translate="fri">Sex</div>
+                        <div class="weekday" data-translate="sat">Sáb</div>
                     </div>
                     <div class="calendar-days" id="calendarDays">
                         <!-- Days will be populated by JavaScript -->
@@ -213,7 +208,7 @@ $currentUser = getCurrentUser();
     <div class="modal" id="newEventModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Novo Agendamento</h3>
+                <h3 data-translate="new_appointment">Novo Agendamento</h3>
                 <button class="close-btn" id="closeModal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -221,62 +216,62 @@ $currentUser = getCurrentUser();
             <div class="modal-body">
                 <form id="newEventForm">
                     <div class="form-group">
-                        <label for="clientName">Nome do Cliente *</label>
+                        <label for="clientName" data-translate="client_name">Nome do Cliente *</label>
                         <input type="text" id="clientName" name="clientName" required>
                     </div>
                     <div class="form-group">
-                        <label for="clientPhone">Telefone *</label>
+                        <label for="clientPhone" data-translate="client_phone">Telefone *</label>
                         <input type="tel" id="clientPhone" name="clientPhone" required>
                     </div>
                     <div class="form-group">
-                        <label for="clientEmail">Email (opcional)</label>
+                        <label for="clientEmail" data-translate="client_email">Email (opcional)</label>
                         <input type="email" id="clientEmail" name="clientEmail">
                     </div>
                     <div class="form-group">
-                        <label for="serviceType">Tipo de Serviço *</label>
-                        <input type="text" id="serviceType" name="serviceType" placeholder="Ex: Corte de cabelo, Manicure, Consulta, etc." required>
+                        <label for="serviceType" data-translate="service_type">Tipo de Serviço *</label>
+                        <input type="text" id="serviceType" name="serviceType" data-translate-placeholder="service_type_placeholder" placeholder="Ex: Corte de cabelo, Manicure, Consulta, etc." required>
                     </div>
                     <div class="form-group">
-                        <label for="serviceDescription">Descrição Detalhada do Serviço</label>
-                        <textarea id="serviceDescription" name="serviceDescription" rows="3" placeholder="Descreva detalhadamente o que será realizado..."></textarea>
+                        <label for="serviceDescription" data-translate="service_description">Descrição Detalhada do Serviço</label>
+                        <textarea id="serviceDescription" name="serviceDescription" rows="3" data-translate-placeholder="service_description_placeholder" placeholder="Descreva detalhadamente o que será realizado..."></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="eventDate">Data *</label>
+                            <label for="eventDate" data-translate="date">Data *</label>
                             <input type="date" id="eventDate" name="eventDate" required>
                         </div>
                         <div class="form-group">
-                            <label for="eventTime">Horário *</label>
+                            <label for="eventTime" data-translate="time">Horário *</label>
                             <input type="time" id="eventTime" name="eventTime" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="eventDuration">Duração Estimada (minutos)</label>
+                            <label for="eventDuration" data-translate="duration">Duração Estimada (minutos)</label>
                             <input type="number" id="eventDuration" name="eventDuration" min="15" step="15" value="60">
                         </div>
                         <div class="form-group">
-                            <label for="eventValue">Valor do Serviço (R$)</label>
+                            <label for="eventValue" data-translate="service_value">Valor do Serviço (R$)</label>
                             <input type="number" id="eventValue" name="eventValue" min="0" step="0.01" placeholder="0.00">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="eventNotes">Observações Adicionais</label>
-                        <textarea id="eventNotes" name="eventNotes" rows="3" placeholder="Informações extras, preferências do cliente, etc."></textarea>
+                        <label for="eventNotes" data-translate="additional_notes">Observações Adicionais</label>
+                        <textarea id="eventNotes" name="eventNotes" rows="3" data-translate-placeholder="additional_notes_placeholder" placeholder="Informações extras, preferências do cliente, etc."></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="eventStatus">Status Inicial</label>
+                        <label for="eventStatus" data-translate="initial_status">Status Inicial</label>
                         <select id="eventStatus" name="eventStatus">
-                            <option value="agendado">Agendado</option>
-                            <option value="confirmado">Confirmado</option>
-                            <option value="pendente">Pendente</option>
+                            <option value="agendado" data-translate="scheduled">Agendado</option>
+                            <option value="confirmado" data-translate="confirmed">Confirmado</option>
+                            <option value="pendente" data-translate="pending">Pendente</option>
                         </select>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelEvent">Cancelar</button>
-                <button class="btn btn-primary" id="saveEvent">Salvar Agendamento</button>
+                <button class="btn btn-secondary" id="cancelEvent" data-translate="cancel">Cancelar</button>
+                <button class="btn btn-primary" id="saveEvent" data-translate="save_appointment">Salvar Agendamento</button>
             </div>
         </div>
     </div>
@@ -284,6 +279,7 @@ $currentUser = getCurrentUser();
     <script>
         window.CURRENT_USER_ID = <?php echo json_encode($currentUser['id_usuario']); ?>;
     </script>
+    <script src="translations.js"></script>
     <script src="calendar.js"></script>
     
     <!-- Inclui o sistema de formatação automática -->

@@ -29,7 +29,6 @@ if (isset($_COOKIE['token'])) {
             $_SESSION['usuario_id'] = $usuario['id_usuario'];
             $_SESSION['nome'] = $usuario['nome'];
             $_SESSION['email'] = $usuario['email'];
-            $_SESSION['tipo_usuario_id'] = $usuario['tipo_usuario_id'];
             
             // Redireciona para o dashboard
             header('Location: index.php');
@@ -57,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Prepara a query SQL para buscar o usuário
-            $stmt = $pdo->prepare("SELECT id_usuario, nome, email, senha, tipo_usuario_id FROM usuario WHERE email = ?");
+            $stmt = $pdo->prepare("SELECT id_usuario, nome, email, senha FROM usuario WHERE email = ?");
             $stmt->execute([$email]);
             $usuario = $stmt->fetch();
             
@@ -67,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['usuario_id'] = $usuario['id_usuario'];
                 $_SESSION['nome'] = $usuario['nome'];
                 $_SESSION['email'] = $usuario['email'];
-                $_SESSION['tipo_usuario_id'] = $usuario['tipo_usuario_id'];
                 
                 // Se o usuário marcou "Lembrar-me", cria um token
                 if ($lembrar) {
