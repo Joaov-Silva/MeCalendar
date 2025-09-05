@@ -349,5 +349,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Console log para debug
-    console.log('Sistema de Agendamento - Landing Page carregada com sucesso!');
+    console.log('MeCalendar - Landing Page carregada com sucesso!');
 });

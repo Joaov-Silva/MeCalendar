@@ -1,6 +1,6 @@
 (function() {
 	function getEl(id) { return document.getElementById(id); }
-	const STORAGE_KEY = 'proAgendaSettings';
+	const STORAGE_KEY = 'MeCalendarSettings';
 
 	function loadSettings() {
 		try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; }

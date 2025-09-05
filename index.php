@@ -7,7 +7,7 @@ require_once 'config.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Agendamento - Organize sua agenda</title>
+    <title>MeCalendar - Organize sua agenda</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -76,9 +76,9 @@ require_once 'config.php';
     <section id="features" class="features">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title" data-translate="main_features">Recursos principais do sistema</h2>
+                <h2 class="section-title" data-translate="main_features">Recursos principais do MeCalendar</h2>
                 <p class="section-description" data-translate="features_description">
-                    Funcionalidades desenvolvidas para facilitar a gestão de agendamentos e horários
+                    Funcionalidades desenvolvidas para facilitar a gestão de agendamentos e horários no MeCalendar
                 </p>
             </div>
             <div class="features-grid">
@@ -152,7 +152,7 @@ require_once 'config.php';
             <div class="cta-content">
                 <h2 class="cta-title" data-translate="start_using_today">Comece a usar hoje mesmo</h2>
                 <p class="cta-description" data-translate="cta_description">
-                    Experimente todas as funcionalidades do sistema de agendamento
+                    Experimente todas as funcionalidades do MeCalendar
                 </p>
                 <div class="cta-buttons">
                     <?php if (!isLoggedIn()): ?>

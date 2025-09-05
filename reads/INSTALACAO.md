@@ -1,4 +1,4 @@
-# Guia de Instalação - Sistema de Agendamento
+# Guia de Instalação - MeCalendar
 
 ## 📋 Pré-requisitos
 
@@ -15,12 +15,12 @@ Antes de começar, certifique-se de ter instalado:
 
 1. **Crie um banco de dados MySQL:**
    ```sql
-   CREATE DATABASE proAgenda CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE MeCalendar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
 2. **Importe a estrutura do banco:**
    ```bash
-   mysql -u root -p proAgenda < banco.sql
+   mysql -u root -p MeCalendar < banco.sql
    ```
 
 ### 2. Configuração do PHP
@@ -33,7 +33,7 @@ Antes de começar, certifique-se de ter instalado:
 2. **Edite o arquivo `config.php` com suas credenciais:**
    ```php
    $host = 'localhost';        // Seu servidor MySQL
-   $dbname = 'proAgenda';      // Nome do banco criado
+   $dbname = 'MeCalendar';      // Nome do banco criado
    $username = 'seu_usuario';  // Seu usuário MySQL
    $password = 'sua_senha';    // Sua senha MySQL
    ```
@@ -73,7 +73,7 @@ Antes de começar, certifique-se de ter instalado:
 
 1. **Acesse o sistema:**
    ```
-   http://localhost/seu-projeto
+   http://localhost/MeCalendar
    ```
 
 2. **Crie uma conta de teste:**

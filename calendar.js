@@ -1,4 +1,4 @@
-// Calendar.js - Funcionalidade do Calendário Sistema de Agendamento
+// Calendar.js - Funcionalidade do Calendário MeCalendar
 
 class Calendar {
     constructor() {
@@ -13,8 +13,8 @@ class Calendar {
         this.init();
     }
 
-    init() {
-        this.loadEvents();
+    async init() {
+        await this.loadEvents();
         this.setupEventListeners();
         this.renderCalendar();
     }
@@ -200,10 +200,17 @@ class Calendar {
                 const eventsContainer = document.createElement('div');
                 eventsContainer.className = 'day-events';
                 
-                dayEvents.forEach(event => {
+                dayEvents.slice(0, 2).forEach(event => {
                     const eventElement = this.createEventElement(event);
                     eventsContainer.appendChild(eventElement);
                 });
+
+                if (dayEvents.length > 2) {
+                    const moreEvents = document.createElement('div');
+                    moreEvents.className = 'events-count';
+                    moreEvents.textContent = `+${dayEvents.length - 2} mais`;
+                    eventsContainer.appendChild(moreEvents);
+                }
                 
                 dayElement.appendChild(document.createElement('div')).innerHTML = dayContent;
                 dayElement.appendChild(eventsContainer);
@@ -212,10 +219,8 @@ class Calendar {
             }
 
             dayElement.addEventListener('click', (e) => {
-                // Se clicou em um evento, não seleciona a data
-                if (!e.target.closest('.event-item')) {
-                    this.selectDate(currentDate);
-                }
+                // Sempre abrir o painel de detalhes do dia ao clicar no dia, mesmo se não houver eventos
+                this.renderDayEventsPanel(dateString, dayEvents);
             });
 
             calendarDays.appendChild(dayElement);
@@ -225,25 +230,17 @@ class Calendar {
 
     createEventElement(event) {
         const eventElement = document.createElement('div');
-        eventElement.className = `event-item ${event.serviceType.toLowerCase().replace(/\s/g, '-')}`;
+        eventElement.className = `event-item ${this.normalizeStatusCss(event.status)}`; // Adiciona classe de status aqui
         eventElement.dataset.eventId = event.id;
-        
+        eventElement.dataset.date = event.date;
         eventElement.innerHTML = `
-            <div class="event-title">${event.client}</div>
-            <div class="event-time">${event.time}</div>
-            <div class="event-service">${event.serviceType}</div>
-            <button class="delete-event" data-event-id="${event.id}" title="Deletar agendamento">
-                <i class="fas fa-trash"></i>
-            </button>
+            <span class="event-time">${event.time}</span>
+            <span class="event-client">${event.client}</span>
         `;
-        
         eventElement.addEventListener('click', (e) => {
-            // Não abrir painel se o clique foi no botão de deletar
-            if (e.target.closest('.delete-event')) return;
+            // Previne que o clique no evento propague para o dia, mas permite abrir o painel de detalhes do dia
             e.stopPropagation();
-            this.showEventPanel(event);
         });
-        
         return eventElement;
     }
 
@@ -263,60 +260,36 @@ class Calendar {
         return `${year}-${month}-${day}`;
     }
 
+    // Substituir a lógica antiga do selectDate
     selectDate(date) {
         this.selectedDate = date;
         const dateString = this.formatDate(date);
         const dayEvents = this.getEventsForDate(dateString);
-        
-        if (dayEvents.length > 0) {
-            this.showEventPanel(dayEvents[0]);
-        } else {
-            this.openNewEventModal(dateString);
-        }
+        this.renderDayEventsPanel(dateString, dayEvents);
     }
 
+    // showEventPanel será mantida para compatibilidade com editEvent, mas agora ela chama renderDayEventsPanel para o dia do evento
     showEventPanel(event) {
-        const panel = document.getElementById('eventPanel');
-        this.selectedEvent = event;
-        
-        // Atualizar informações do evento escopando pelo painel (evita conflito com IDs no formulário)
-        panel.querySelector('#eventClient').textContent = event.client;
-        panel.querySelector('#eventPhone').textContent = event.phone;
-        panel.querySelector('#eventServiceType').textContent = event.serviceType;
-        panel.querySelector('#eventServiceDescription').textContent = event.serviceDescription || 'Não informado';
-        panel.querySelector('#eventDate').textContent = this.formatDateForDisplay(event.date);
-        panel.querySelector('#eventTime').textContent = event.time;
-        panel.querySelector('#eventValue').textContent = `R$ ${Number(event.value || 0).toFixed(2)}`;
-        const statusBadge = panel.querySelector('#eventStatus');
-        statusBadge.textContent = this.getStatusText(event.status);
-        statusBadge.className = `status-badge ${this.normalizeStatusCss(event.status)}`;
-        panel.querySelector('#eventNotes').textContent = event.notes || 'Nenhuma observação';
-        
-        // Atualizar botões de ação
-        const actionsContainer = panel.querySelector('.event-actions');
-        if (actionsContainer) {
-            actionsContainer.innerHTML = `
-                <button class="btn btn-outline" onclick="calendar.editEvent(${event.id})">
-                    <i class="fas fa-edit"></i>
-                    Editar
-                </button>
-                <button class="btn btn-outline" onclick="calendar.callClient('${event.phone}')">
-                    <i class="fas fa-phone"></i>
-                    Ligar
-                </button>
-                <button class="btn btn-danger" onclick="calendar.deleteEvent(${event.id})">
-                    <i class="fas fa-trash"></i>
-                    Cancelar
-                </button>
-            `;
-        }
-        
-        panel.classList.add('active');
+        // Quando um evento individual é clicado, abrimos o painel para aquele dia
+        const dateString = event.date;
+        const dayEvents = this.getEventsForDate(dateString);
+        this.renderDayEventsPanel(dateString, dayEvents);
+
+        // Agora, como queremos destacar o evento clicado no painel, vamos rolar até ele e/ou destacá-lo
+        // Isso pode ser feito com um pequeno delay para garantir que o painel esteja renderizado
+        setTimeout(() => {
+            const eventElementInPanel = document.querySelector(`.event-detail-card [data-event-id="${event.id}"]`);
+            if (eventElementInPanel) {
+                eventElementInPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                eventElementInPanel.classList.add('highlight'); // Adicionar uma classe para destaque temporário
+                setTimeout(() => eventElementInPanel.classList.remove('highlight'), 2000); // Remover destaque após 2s
+            }
+        }, 100); 
     }
 
     closeEventPanel() {
         const panel = document.getElementById('eventPanel');
-        panel.classList.remove('active', 'open', 'show');
+        panel.classList.remove('active');
         this.selectedEvent = null;
     }
 
@@ -539,11 +512,12 @@ class Calendar {
     }
 
     formatDateForDisplay(dateString) {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        const [year, month, day] = dateString.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        return `${d}/${m}/${y}`;
     }
 
     getStatusText(status) {
@@ -615,6 +589,63 @@ class Calendar {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
+    }
+
+    // Nova função para renderizar o painel de eventos do dia
+    renderDayEventsPanel(dateString, dayEvents) {
+        const panel = document.getElementById('eventPanel');
+        const panelHeader = panel.querySelector('.panel-header');
+        const panelContent = panel.querySelector('.panel-content');
+
+        panelHeader.innerHTML = `
+            <h3>Agendamentos em ${this.formatDateForDisplay(dateString)}</h3>
+            <button class="close-btn" id="closePanel">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        panelContent.innerHTML = '';
+
+        if (dayEvents.length === 0) {
+            panelContent.innerHTML = '<p class="no-events-message">Nenhum agendamento para este dia.</p>';
+        } else {
+            dayEvents.forEach(event => {
+                const eventDetailElement = document.createElement('div');
+                eventDetailElement.className = 'event-detail-card';
+                eventDetailElement.innerHTML = `
+                    <div class="event-detail-header">
+                        <h4>${event.client} - ${event.serviceType}</h4>
+                        <span class="status-badge ${this.normalizeStatusCss(event.status)}">${this.getStatusText(event.status)}</span>
+                    </div>
+                    <div class="event-detail-body">
+                        <p><strong>Horário:</strong> ${event.time} (Duração: ${event.duration} min)</p>
+                        <p><strong>Telefone:</strong> ${event.phone}</p>
+                        <p><strong>Email:</strong> ${event.email || 'Não informado'}</p>
+                        <p><strong>Descrição:</strong> ${event.serviceDescription || 'Não informado'}</p>
+                        <p><strong>Valor:</strong> R$ ${Number(event.value || 0).toFixed(2)}</p>
+                        <p><strong>Notas:</strong> ${event.notes || 'Nenhuma observação'}</p>
+                    </div>
+                    <div class="event-detail-actions">
+                        <button class="btn btn-sm btn-outline" onclick="calendar.editEvent(${event.id})">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-sm btn-outline" onclick="calendar.callClient('${event.phone}')">
+                            <i class="fas fa-phone"></i> Ligar
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="calendar.deleteEvent(${event.id})">
+                            <i class="fas fa-trash"></i> Cancelar
+                        </button>
+                    </div>
+                `;
+                panelContent.appendChild(eventDetailElement);
+            });
+        }
+
+        // Reatribuir listener para o botão de fechar, pois o innerHTML foi atualizado
+        panelHeader.querySelector('#closePanel').addEventListener('click', () => {
+            this.closeEventPanel();
+        });
+        
+        panel.classList.add('active');
     }
 }
 

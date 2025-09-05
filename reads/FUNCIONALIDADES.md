@@ -1,4 +1,4 @@
-# Funcionalidades do Sistema de Agendamento
+# Funcionalidades do MeCalendar
 
 ## 🔐 Sistema de Autenticação
 
@@ -170,4 +170,4 @@
 
 ---
 
-**Nota**: Este sistema foi desenvolvido como projeto de demonstração, com todas as funcionalidades principais implementadas e funcionais. A arquitetura permite fácil expansão e personalização conforme necessidades específicas.
+**Nota**: Este sistema foi desenvolvido como projeto de demonstração, com todas as funcionalidades principais implementadas e funcionais. A arquitetura permite fácil expansão e personalização conforme necessidades específicas do MeCalendar.

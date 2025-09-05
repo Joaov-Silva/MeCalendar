@@ -4,7 +4,7 @@ session_start();
 
 // Configurações do banco de dados
 $host = 'localhost';
-$dbname = 'proAgenda';
+$dbname = 'MeCalendar';
 $username = 'root';
 $password = '';
 

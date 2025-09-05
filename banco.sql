@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS proAgenda CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE proAgenda;
+CREATE DATABASE IF NOT EXISTS MeCalendar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE MeCalendar;
 
 -- Tabela de usuários (apenas proprietários)
 CREATE TABLE IF NOT EXISTS usuario (

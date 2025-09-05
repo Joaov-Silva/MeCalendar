@@ -1,6 +1,6 @@
-# Sistema de Agendamento
+# MeCalendar
 
-Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL, focado em proprietários de estabelecimentos que precisam gerenciar agendamentos de clientes.
+MeCalendar é um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL, focado em proprietários de estabelecimentos que precisam gerenciar agendamentos de clientes.
 
 ## 🚀 Funcionalidades
 
@@ -30,8 +30,8 @@ Um sistema completo de agendamento desenvolvido em PHP com banco de dados MySQL,
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/Nicolas-Pierini/ProAgenda.git
-   cd ProAgenda
+   git clone https://github.com/Nicolas-Pierini/MeCalendar.git
+   cd MeCalendar
    ```
 
 2. **Configure o banco de dados**

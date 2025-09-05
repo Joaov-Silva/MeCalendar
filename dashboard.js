@@ -69,7 +69,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">
-              Bem-vindo ao ProAgenda! ✨
+              Bem-vindo ao MeCalendar! ✨
             </h1>
             <p className="text-slate-600 mt-1">
               {format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })}

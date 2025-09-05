@@ -15,7 +15,7 @@ const translations = {
         'new_feature': '✨ Novo: Sistema de lembretes automáticos',
         'organize_schedule': 'Organize sua agenda',
         'with_ease': 'com facilidade',
-        'hero_description': 'Sistema completo para organizar horários, agendamentos e clientes de forma simples e eficiente. Ideal para profissionais autônomos e pequenos estabelecimentos.',
+        'hero_description': 'MeCalendar, um sistema completo para organizar horários, agendamentos e clientes de forma simples e eficiente. Ideal para profissionais autônomos e pequenos estabelecimentos.',
         'create_account': 'Criar Conta',
         'view_demo': 'Ver Demonstração',
         'access_dashboard': 'Acessar Dashboard',
@@ -24,12 +24,12 @@ const translations = {
         'easy_to_use': 'Fácil de usar',
         'intuitive_interface': 'Interface intuitiva',
         'fully_functional': 'Totalmente funcional',
-        'main_features': 'Recursos principais do sistema',
-        'features_description': 'Funcionalidades desenvolvidas para facilitar a gestão de agendamentos e horários',
+        'main_features': 'Recursos principais do MeCalendar',
+        'features_description': 'Funcionalidades desenvolvidas para facilitar a gestão de agendamentos e horários no MeCalendar',
         'smart_calendar': 'Calendário Inteligente',
         'smart_calendar_description': 'Visualize todos os seus agendamentos em um calendário intuitivo. Organize horários, bloqueie períodos e evite conflitos.',
         'client_management': 'Gestão de Clientes',
-        'client_management_description': 'Sistema completo para cadastrar e gerenciar informações dos seus clientes de forma organizada.',
+        'client_management_description': 'MeCalendar, um sistema completo para cadastrar e gerenciar informações dos seus clientes de forma organizada.',
         'appointment_creation': 'Criação de Agendamentos',
         'appointment_creation_description': 'Crie e gerencie agendamentos para seus clientes de forma rápida e eficiente.',
         'notification_system': 'Sistema de Notificações',
@@ -39,7 +39,7 @@ const translations = {
         'responsive': 'Responsivo',
         'responsive_description': 'Interface adaptável para todos os dispositivos, desde smartphones até desktops.',
         'start_using_today': 'Comece a usar hoje mesmo',
-        'cta_description': 'Experimente todas as funcionalidades do sistema de agendamento',
+        'cta_description': 'Experimente todas as funcionalidades do MeCalendar',
         
         // Calendário
         'manage_appointments': 'Gerencie seus agendamentos',
@@ -101,7 +101,7 @@ const translations = {
         'no_data_yet': 'Sem dados ainda.',
         
         // Configurações
-        'customize_experience': 'Personalize sua experiência e preferências do sistema',
+        'customize_experience': 'Personalize sua experiência e preferências do MeCalendar',
         'general_preferences': 'Preferências Gerais',
         'system_language': 'Idioma do sistema',
         'portuguese_brazil': 'Português (Brasil)',
@@ -302,7 +302,7 @@ function t(key, lang = null) {
 
 // Função para obter idioma atual
 function getCurrentLanguage() {
-    const settings = JSON.parse(localStorage.getItem('proAgendaSettings') || '{}');
+    const settings = JSON.parse(localStorage.getItem('MeCalendarSettings') || '{}');
     return settings.language || 'pt-BR';
 }
 
@@ -331,9 +331,9 @@ function applyTranslations(lang = null) {
 
 // Função para definir idioma
 function setLanguage(lang) {
-    const settings = JSON.parse(localStorage.getItem('proAgendaSettings') || '{}');
+    const settings = JSON.parse(localStorage.getItem('MeCalendarSettings') || '{}');
     settings.language = lang;
-    localStorage.setItem('proAgendaSettings', JSON.stringify(settings));
+    localStorage.setItem('MeCalendarSettings', JSON.stringify(settings));
     applyTranslations(lang);
     
     // Recarregar a página para aplicar todas as traduções

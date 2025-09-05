@@ -16,7 +16,7 @@ $currentUser = getCurrentUser();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Agendamento - Calendário</title>
+    <title>MeCalendar - Calendário</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="dark-mode.js"></script>
@@ -31,7 +31,7 @@ $currentUser = getCurrentUser();
                         <div class="logo-icon">
                             <i class="fas fa-calendar"></i>
                         </div>
-                        <span class="logo-text">Sistema de Agendamento</span>
+                        <span class="logo-text">MeCalendar</span>
                     </a>
                 </div>
             </div>

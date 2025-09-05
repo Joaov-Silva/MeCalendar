@@ -11,7 +11,7 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
         <div class="header-content">
             <a href="index.php" class="logo" style="text-decoration: none; color: inherit;">
                 <div class="logo-icon"><i class="fas fa-calendar"></i></div>
-                <span class="logo-text">Sistema de Agendamento</span>
+                <span class="logo-text">MeCalendar</span>
             </a>
             
             <nav class="nav">

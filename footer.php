@@ -7,7 +7,7 @@
                     <div class="logo-icon">
                         <i class="fas fa-calendar"></i>
                     </div>
-                    <span class="logo-text">Sistema de Agendamento</span>
+                    <span class="logo-text">MeCalendar</span>
                 </div>
                 <p class="footer-description">
                     Sistema completo para organizar agendamentos e horários de forma simples e eficiente.
@@ -34,7 +34,7 @@
         </div>
         <div class="footer-bottom">
             <div class="footer-bottom-content">
-                <p>&copy; 2025 Sistema de Agendamento. </p>
+                <p>&copy; 2025 MeCalendar. </p>
             </div>
         </div>
     </div>
