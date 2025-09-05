@@ -91,6 +91,9 @@ const translations = {
         'client_created': 'Cliente criado!',
         'edit_client': 'Editar Cliente',
         'confirm_delete_client': 'Tem certeza que deseja excluir este cliente?',
+        'conflict_warning_message': 'Este agendamento conflita com outro ou está muito próximo. Deseja salvar mesmo assim?',
+        'fill_required_fields': 'Por favor, preencha todos os campos obrigatórios!',
+        'negative_value_error': 'O valor do agendamento não pode ser negativo!',
         
         // Relatórios
         'track_metrics': 'Acompanhe métricas e desempenho dos atendimentos',
@@ -239,6 +242,9 @@ const translations = {
         'client_created': 'Client created!',
         'edit_client': 'Edit Client',
         'confirm_delete_client': 'Are you sure you want to delete this client?',
+        'conflict_warning_message': 'This appointment conflicts with another or is too close. Do you want to save anyway?',
+        'fill_required_fields': 'Please fill in all required fields!',
+        'negative_value_error': 'Appointment value cannot be negative!',
         
         // Reports
         'track_metrics': 'Track metrics and appointment performance',

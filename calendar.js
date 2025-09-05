@@ -180,7 +180,7 @@ class Calendar {
             const isCurrentMonth = currentDate.getMonth() === this.currentDate.getMonth();
             const isToday = this.isToday(currentDate);
             const dateString = this.formatDate(currentDate);
-            
+
             if (!isCurrentMonth) {
                 dayElement.classList.add('other-month');
             }
@@ -189,12 +189,17 @@ class Calendar {
                 dayElement.classList.add('today');
             }
 
-            // Verificar se há eventos neste dia
+            // Criar um container para o número do dia e a label "Hoje"
+            const dayHeaderContent = document.createElement('div');
+            dayHeaderContent.className = 'day-header-content';
+            dayHeaderContent.innerHTML = `<span class="day-number">${dayNumber}</span>`;
+            if (isToday) {
+                dayHeaderContent.innerHTML += `<span class="today-label">Hoje</span>`;
+            }
+            dayElement.appendChild(dayHeaderContent);
+
+            // Adicionar eventos, se houver
             const dayEvents = this.getEventsForDate(dateString);
-            
-            // Criar conteúdo do dia
-            let dayContent = `<span class="day-number">${dayNumber}</span>`;
-            
             if (dayEvents.length > 0) {
                 dayElement.classList.add('has-events');
                 const eventsContainer = document.createElement('div');
@@ -212,10 +217,7 @@ class Calendar {
                     eventsContainer.appendChild(moreEvents);
                 }
                 
-                dayElement.appendChild(document.createElement('div')).innerHTML = dayContent;
                 dayElement.appendChild(eventsContainer);
-            } else {
-                dayElement.innerHTML = dayContent;
             }
 
             dayElement.addEventListener('click', (e) => {
@@ -329,7 +331,7 @@ class Calendar {
         saveButton.onclick = () => this.saveNewEvent();
     }
 
-    async saveNewEvent() {
+    async saveNewEvent(forceSave = false) {
         const form = document.getElementById('newEventForm');
         const formData = new FormData(form);
         
@@ -346,8 +348,23 @@ class Calendar {
         const notes = formData.get('eventNotes').trim();
         
         if (!clientName || !clientPhone || !serviceType || !eventDate || !eventTime) {
-            this.showNotification('Por favor, preencha todos os campos obrigatórios!', 'error');
+            this.showNotification(translations[getCurrentLanguage()]['fill_required_fields'], 'error');
             return;
+        }
+
+        if (value < 0) {
+            this.showNotification(translations[getCurrentLanguage()]['negative_value_error'], 'error');
+            return;
+        }
+
+        if (!forceSave) {
+            const conflict = this.checkEventConflicts(eventDate, eventTime, duration);
+            if (conflict) {
+                const confirmSave = confirm(translations[getCurrentLanguage()]['conflict_warning_message']);
+                if (!confirmSave) {
+                    return;
+                }
+            }
         }
         
         // Salvar no backend
@@ -424,14 +441,22 @@ class Calendar {
         const form = document.getElementById('newEventForm');
         const formData = new FormData(form);
         
-        // Validação dos campos obrigatórios
         const clientName = (formData.get('clientName') || '').trim();
         const clientPhone = (formData.get('clientPhone') || '').trim();
         const serviceType = (formData.get('serviceType') || '').trim();
         const eventDate = formData.get('eventDate');
         const eventTime = formData.get('eventTime');
+        
+        const duration = parseInt(formData.get('eventDuration')) || 60;
+        const value = parseFloat(formData.get('eventValue')) || 0.00;
+        
         if (!clientName || !clientPhone || !serviceType || !eventDate || !eventTime) {
-            this.showNotification('Por favor, preencha todos os campos obrigatórios!', 'error');
+            this.showNotification(translations[getCurrentLanguage()]['fill_required_fields'], 'error');
+            return;
+        }
+
+        if (value < 0) {
+            this.showNotification(translations[getCurrentLanguage()]['negative_value_error'], 'error');
             return;
         }
 
@@ -443,8 +468,8 @@ class Calendar {
             serviceDescription: (formData.get('serviceDescription') || '').trim(),
             date: eventDate,
             time: eventTime,
-            duration: parseInt(formData.get('eventDuration')) || 60,
-            value: parseFloat(formData.get('eventValue')) || 0.00,
+            duration: duration,
+            value: value,
             status: this.normalizeStatusCss(formData.get('eventStatus')),
             notes: formData.get('eventNotes').trim()
         };
@@ -509,6 +534,12 @@ class Calendar {
 
     callClient(phone) {
         window.open(`tel:${phone}`, '_self');
+    }
+
+    createUtcDate(dateString, timeString) {
+        const [year, month, day] = dateString.split('-').map(Number);
+        const [hour, minute] = timeString.split(':').map(Number);
+        return new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
     }
 
     formatDateForDisplay(dateString) {
@@ -646,6 +677,35 @@ class Calendar {
         });
         
         panel.classList.add('active');
+    }
+
+    checkEventConflicts(newEventDate, newEventTime, newEventDuration) {
+        const newStartTime = this.createUtcDate(newEventDate, newEventTime);
+        const newEndTime = new Date(newStartTime.getTime() + newEventDuration * 60 * 1000); // duração em minutos
+
+        const thirtyMinutes = 30 * 60 * 1000; // 30 minutos em milissegundos
+
+        for (const existingEvent of this.events) {
+            // Ignorar eventos cancelados para a verificação de conflito
+            if (existingEvent.status === 'cancelled') continue;
+
+            const existingStartTime = this.createUtcDate(existingEvent.date, existingEvent.time);
+            const existingEndTime = new Date(existingStartTime.getTime() + existingEvent.duration * 60 * 1000);
+
+            // Verifica sobreposição direta
+            const directOverlap = (newStartTime.getTime() < existingEndTime.getTime() && newEndTime.getTime() > existingStartTime.getTime());
+
+            // Verifica se o novo evento termina dentro de 30 minutos do início de um evento existente
+            const endsTooCloseToExistingStart = (newEndTime.getTime() > (existingStartTime.getTime() - thirtyMinutes) && newEndTime.getTime() <= existingStartTime.getTime());
+
+            // Verifica se o novo evento começa dentro de 30 minutos do fim de um evento existente
+            const startsTooCloseToExistingEnd = (newStartTime.getTime() >= existingEndTime.getTime() && newStartTime.getTime() < (existingEndTime.getTime() + thirtyMinutes));
+
+            if (directOverlap || endsTooCloseToExistingStart || startsTooCloseToExistingEnd) {
+                return true; // Conflito encontrado
+            }
+        }
+        return false; // Nenhum conflito
     }
 }
 
