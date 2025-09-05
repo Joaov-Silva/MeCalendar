@@ -47,7 +47,7 @@ $currentUser = getCurrentUser();
 				<div class="user-info">
 					<div class="user-avatar"><i class="fas fa-user"></i></div>
 					<div class="user-details">
-						<span class="user-name"><?= htmlspecialchars($currentUser['nome']); ?></span>
+						<span class="user-name" data-user-id="<?= htmlspecialchars($currentUser['id_usuario']); ?>"><?= htmlspecialchars($currentUser['nome']); ?></span>
 						<span class="user-role" data-translate="owner">Proprietário</span>
 					</div>
 				</div>
@@ -109,15 +109,131 @@ $currentUser = getCurrentUser();
 		</main>
 	</div>
 
+	<script>
+		window.CURRENT_USER_ID = <?php echo json_encode($currentUser['id_usuario']); ?>;
+	</script>
 	<script src="translations.js"></script>
 	<script>
-	// Mock: preencher KPIs com dados básicos
-	document.addEventListener('DOMContentLoaded', () => {
-		document.getElementById('kpiAtendimentos').textContent = '24';
-		document.getElementById('kpiReceita').textContent = 'R$ 2.380,00';
-		document.getElementById('kpiCancelados').textContent = '3';
-		document.getElementById('kpiTaxaConfirmacao').textContent = '87%';
-	});
+		// Funções utilitárias de formatação
+		function formatDateForDisplay(dateString) {
+			const [year, month, day] = dateString.split('-').map(Number);
+			const date = new Date(year, month - 1, day);
+			const d = String(date.getDate()).padStart(2, '0');
+			const m = String(date.getMonth() + 1).padStart(2, '0');
+			const y = date.getFullYear();
+			return `${d}/${m}/${y}`;
+		}
+
+		function formatCurrency(value) {
+			return `R$ ${parseFloat(value).toFixed(2).replace('.', ',')}`;
+		}
+
+		async function loadReportsData() {
+			const currentUserId = window.CURRENT_USER_ID; // Assumindo que CURRENT_USER_ID é global ou de algum modo acessível
+			if (!currentUserId) {
+				console.error("ID do usuário não disponível para carregar relatórios.");
+				document.getElementById('reportsBody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1rem;">Erro ao carregar dados do usuário.</td></tr>';
+				return;
+			}
+
+			try {
+				const resp = await fetch('agendamentos_api.php', { credentials: 'same-origin' });
+				if (!resp.ok) throw new Error('Falha ao carregar agendamentos para relatórios.');
+				const data = await resp.json();
+
+				if (data && data.success && data.data) {
+					const allAppointments = data.data;
+					const today = new Date();
+					const currentMonth = today.getMonth();
+					const currentYear = today.getFullYear();
+
+					let totalAppointmentsMonth = 0;
+					let totalRevenueMonth = 0;
+					let cancelledAppointmentsMonth = 0;
+					let confirmedAppointmentsMonth = 0;
+
+					const recentAppointments = [];
+
+					allAppointments.forEach(app => {
+						const appDate = new Date(app.date);
+						const appMonth = appDate.getMonth();
+						const appYear = appDate.getFullYear();
+
+						// Calcular KPIs para o mês atual
+						if (appMonth === currentMonth && appYear === currentYear) {
+							totalAppointmentsMonth++;
+							// Normalize o status para cálculo
+							const normalizedStatus = app.status ? app.status.toLowerCase() : '';
+							if (normalizedStatus === 'confirmed' || normalizedStatus === 'realizado') {
+								confirmedAppointmentsMonth++;
+								totalRevenueMonth += parseFloat(app.value || 0);
+							} else if (normalizedStatus === 'cancelled') {
+								cancelledAppointmentsMonth++;
+							}
+						}
+
+						// Coletar para a tabela de últimos atendimentos (ex: últimos 10)
+						recentAppointments.push(app);
+					});
+
+					// Ordenar agendamentos recentes por data e hora (mais recentes primeiro)
+					recentAppointments.sort((a, b) => {
+						const dateA = new Date(`${a.date}T${a.time}`);
+						const dateB = new Date(`${b.date}T${b.time}`);
+						return dateB - dateA;
+					});
+
+					// Atualizar KPIs na tela
+					document.getElementById('kpiAtendimentos').textContent = totalAppointmentsMonth;
+					document.getElementById('kpiReceita').textContent = formatCurrency(totalRevenueMonth);
+					document.getElementById('kpiCancelados').textContent = cancelledAppointmentsMonth;
+
+					const confirmationRate = totalAppointmentsMonth > 0 
+						? ((confirmedAppointmentsMonth / totalAppointmentsMonth) * 100).toFixed(0) 
+						: 0;
+					document.getElementById('kpiTaxaConfirmacao').textContent = `${confirmationRate}%`;
+
+					// Preencher tabela de últimos atendimentos
+					const reportsBody = document.getElementById('reportsBody');
+					reportsBody.innerHTML = ''; // Limpa o conteúdo atual
+
+					if (recentAppointments.length > 0) {
+						recentAppointments.slice(0, 10).forEach(app => { // Exibe os 10 mais recentes
+							const row = reportsBody.insertRow();
+							const statusText = app.status ? app.status.charAt(0).toUpperCase() + app.status.slice(1) : 'Pendente'; // Capitaliza o status
+							row.innerHTML = `
+								<td>${formatDateForDisplay(app.date)}</td>
+								<td>${app.client}</td>
+								<td>${app.service_type || 'Não informado'}</td>
+								<td>${formatCurrency(app.value || 0)}</td>
+								<td><span class="status-badge ${app.status}">${statusText}</span></td>
+							`;
+						});
+					} else {
+						reportsBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1rem;" data-translate="no_data_yet">Sem dados ainda.</td></tr>';
+					}
+
+				} else {
+					document.getElementById('reportsBody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1rem;">Nenhum agendamento encontrado.</td></tr>';
+				}
+			} catch (e) {
+				console.error("Erro ao carregar dados de relatório:", e);
+				document.getElementById('reportsBody').innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1rem;">Erro: ${e.message}</td></tr>`;
+			}
+		}
+
+		// Carregar dados quando o DOM estiver pronto
+		document.addEventListener('DOMContentLoaded', () => {
+			// Captura o ID do usuário logado do elemento HTML
+			// Isso é apenas um fallback se window.CURRENT_USER_ID não estiver definido
+			// Idealmente, CURRENT_USER_ID viria do PHP de forma mais direta e segura
+			const userIdElement = document.querySelector('.user-info .user-name');
+			if (userIdElement && userIdElement.dataset.userId) {
+				window.CURRENT_USER_ID = userIdElement.dataset.userId;
+			}
+
+			loadReportsData();
+		});
 	</script>
 </body>
 </html>

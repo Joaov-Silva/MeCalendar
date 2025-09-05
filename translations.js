@@ -89,6 +89,8 @@ const translations = {
         'client_deleted': 'Cliente excluído com sucesso!',
         'client_updated': 'Cliente atualizado!',
         'client_created': 'Cliente criado!',
+        'edit_client': 'Editar Cliente',
+        'confirm_delete_client': 'Tem certeza que deseja excluir este cliente?',
         
         // Relatórios
         'track_metrics': 'Acompanhe métricas e desempenho dos atendimentos',
@@ -235,6 +237,8 @@ const translations = {
         'client_deleted': 'Client deleted successfully!',
         'client_updated': 'Client updated!',
         'client_created': 'Client created!',
+        'edit_client': 'Edit Client',
+        'confirm_delete_client': 'Are you sure you want to delete this client?',
         
         // Reports
         'track_metrics': 'Track metrics and appointment performance',

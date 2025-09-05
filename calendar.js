@@ -104,7 +104,7 @@ class Calendar {
                     status: row.status || 'pending',
                     notes: row.notes || '',
                     ownerUserId: String(row.owner_user_id)
-                }));
+                })).filter(event => event.status !== 'cancelled'); // Filtra eventos cancelados
             } else {
                 this.events = [];
             }

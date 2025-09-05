@@ -97,8 +97,15 @@ try {
             case 'delete':
                 $id = (int)($input['id'] ?? 0);
                 if ($id <= 0) { throw new Exception('ID inválido'); }
-                $stmt = $pdo->prepare('DELETE FROM agendamento_front WHERE id = ? AND owner_user_id = ?');
-                $stmt->execute([$id, $currentUserId]);
+                // Verifica propriedade
+                $chk = $pdo->prepare('SELECT owner_user_id FROM agendamento_front WHERE id = ?');
+                $chk->execute([$id]);
+                $own = $chk->fetchColumn();
+                if (!$own || (int)$own !== $currentUserId) { http_response_code(403); echo json_encode(['success'=>false,'error'=>'Sem permissão']); exit; }
+                
+                // Altera o status para 'cancelled' em vez de deletar o registro
+                $stmt = $pdo->prepare('UPDATE agendamento_front SET status = ? WHERE id = ? AND owner_user_id = ?');
+                $stmt->execute(['cancelled', $id, $currentUserId]);
                 echo json_encode(['success' => true]);
                 exit;
         }

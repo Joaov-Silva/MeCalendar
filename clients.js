@@ -78,6 +78,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
             </div>
         `;
+        card.dataset.clientId = client.id; // Adiciona o ID ao card para acesso fácil
+        card.addEventListener('click', (e) => {
+            // Previne que o clique nos botões propague e abra os detalhes novamente
+            if (e.target.closest('.client-actions button')) return;
+            viewClient(client);
+        });
         return card;
     }
 
@@ -105,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nome: formData.get('nome'),
             telefone: formData.get('telefone'),
             email: formData.get('email'),
-            dataNascimento: formData.get('dataNascimento'),
+            data_nascimento: formData.get('dataNascimento'), // Corrigido para data_nascimento
             endereco: formData.get('endereco'),
             observacoes: formData.get('observacoes'),
             status: formData.get('status')
@@ -123,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             
             if (result.success) {
-                showToast(clientId ? 'Cliente atualizado!' : 'Cliente criado!');
+                showToast(clientId ? translations[getCurrentLanguage()]['client_updated'] : translations[getCurrentLanguage()]['client_created'], 'success'); // Usando traduções
                 closeModal('clientModal');
                 loadClients();
             } else {
@@ -136,54 +142,48 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Global Functions for Card Actions
-function viewClient(id) {
-    fetch('api/clients.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const client = data.data.find(c => c.id == id);
-                if (client) {
-                    showClientDetails(client);
-                }
-            }
-        })
-        .catch(error => showToast('Erro ao carregar detalhes do cliente', 'error'));
+// As funções globais viewClient, editClient e deleteClient agora recebem o objeto client ou ID diretamente
+function viewClient(client) {
+    showClientDetails(client);
 }
 
-function editClient(id) {
-    fetch('api/clients.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const client = data.data.find(c => c.id == id);
-                if (client) {
-                    fillClientForm(client);
-                    showModal('clientModal');
-                }
-            }
-        })
-        .catch(error => showToast('Erro ao carregar dados do cliente', 'error'));
+async function editClient(id) {
+    try {
+        const response = await fetch(`api/clients.php?id=${id}`); // Fetch individual client
+        const data = await response.json();
+        if (data.success && data.data) {
+            fillClientForm(data.data);
+            document.getElementById('modalTitle').textContent = translations[getCurrentLanguage()]['edit_client']; // Título de edição
+            showModal('clientModal');
+        } else {
+            throw new Error(data.error || 'Cliente não encontrado');
+        }
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
 }
 
-function deleteClient(id) {
-    if (confirm('Tem certeza que deseja excluir este cliente?')) {
-        fetch('api/clients.php', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: id })
-        })
-        .then(response => response.json())
-        .then(data => {
+async function deleteClient(id) {
+    if (confirm(translations[getCurrentLanguage()]['confirm_delete_client'] || 'Tem certeza que deseja excluir este cliente?')) {
+        try {
+            const response = await fetch('api/clients.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            });
+            const data = await response.json();
             if (data.success) {
-                showToast('Cliente excluído com sucesso!');
+                showToast(translations[getCurrentLanguage()]['client_deleted'], 'success'); // Usando traduções
                 loadClients();
+                closeModal('clientDetailsModal'); // Fecha o modal de detalhes após exclusão
             } else {
-                showToast('Erro ao excluir cliente: ' + data.error, 'error');
+                throw new Error(data.error || 'Erro ao excluir cliente');
             }
-        })
-        .catch(error => showToast('Erro ao excluir cliente', 'error'));
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
     }
 }
 
@@ -192,7 +192,7 @@ function showClientDetails(client) {
     document.getElementById('detailsTelefone').textContent = client.telefone;
     document.getElementById('detailsEmail').textContent = client.email || 'Não informado';
     document.getElementById('detailsEndereco').textContent = client.endereco || 'Não informado';
-    document.getElementById('detailsDataNascimento').textContent = client.data_nascimento || 'Não informado';
+    document.getElementById('detailsDataNascimento').textContent = formatDateForDisplay(client.data_nascimento) || 'Não informado';
     document.getElementById('detailsObservacoes').textContent = client.observacoes || 'Nenhuma observação';
     
     const statusBadge = document.getElementById('detailsStatus');
@@ -213,13 +213,17 @@ function fillClientForm(client) {
     document.getElementById('nome').value = client.nome;
     document.getElementById('telefone').value = client.telefone;
     document.getElementById('email').value = client.email || '';
-    document.getElementById('dataNascimento').value = client.data_nascimento || '';
+    document.getElementById('dataNascimento').value = client.data_nascimento || ''; // Corrigido para data_nascimento
     document.getElementById('endereco').value = client.endereco || '';
     document.getElementById('observacoes').value = client.observacoes || '';
     document.getElementById('status').value = client.status;
     
-    document.getElementById('modalTitle').textContent = 'Editar Cliente';
+    document.getElementById('modalTitle').textContent = translations[getCurrentLanguage()]['edit_client']; // Usando traduções
 }
+
+// Funções de modal e toast (mover para o topo do arquivo ou em um utilitário se usadas em mais lugares)
+// Já existem em cliente.php. Preciso garantir que não haverá duplicidade ou que a versão correta será usada.
+// Para evitar conflito, vou definir estas funções como globais aqui, e o script em cliente.php pode utilizá-las.
 
 function showModal(modalId) {
     document.getElementById(modalId).style.display = 'flex';
@@ -230,7 +234,7 @@ function closeModal(modalId) {
     if (modalId === 'clientModal') {
         document.getElementById('clientForm').reset();
         document.getElementById('clientId').value = '';
-        document.getElementById('modalTitle').textContent = 'Novo Cliente';
+        document.getElementById('modalTitle').textContent = translations[getCurrentLanguage()]['new_client']; // Usando traduções
     }
 }
 
@@ -243,3 +247,18 @@ function showToast(message, type = 'success') {
         toast.style.display = 'none';
     }, 3000);
 }
+
+// Adicionar função de formatação de data para display, se não existir globalmente
+// (poderia vir de translations.js ou utilitários)
+function formatDateForDisplay(dateString) {
+    if (!dateString) return 'Não informado';
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}/${m}/${y}`;
+}
+
+// Adicionar traduções para `edit_client` e `confirm_delete_client` no translations.js
+// (isso será feito no próximo passo, se necessário)
