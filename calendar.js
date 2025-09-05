@@ -10,11 +10,14 @@ class Calendar {
         this.currentUserId = (window && window.CURRENT_USER_ID) ? String(window.CURRENT_USER_ID) : 'guest';
         this.storageKey = `calendarEvents_${this.currentUserId}`;
         
+        this.clients = []; // Adicionar array para armazenar clientes
+        
         this.init();
     }
 
     async init() {
         await this.loadEvents();
+        await this.loadClientsForAutocomplete(); // Carregar clientes na inicialização
         this.setupEventListeners();
         this.renderCalendar();
     }
@@ -80,6 +83,22 @@ class Calendar {
                 this.deleteEvent(eventId);
             }
         });
+        
+        // Listener para autocompletar clientes
+        const clientNameInput = document.getElementById('clientName');
+        if (clientNameInput) {
+            clientNameInput.addEventListener('change', (e) => this.handleClientSelection(e.target.value));
+        }
+        
+        // Listener para formatar telefone no input do agendamento (REMOVIDO, POIS SERÁ PREENCHIDO)
+        /*
+        const clientPhoneInput = document.getElementById('clientPhone');
+        if (clientPhoneInput) {
+            clientPhoneInput.addEventListener('input', (e) => {
+                e.target.value = this.formatPhoneNumberInput(e.target.value);
+            });
+        }
+        */
     }
 
     async loadEvents() {
@@ -112,6 +131,28 @@ class Calendar {
             this.events = [];
             console.error(e);
             this.showNotification('Erro ao carregar agendamentos.', 'error');
+        }
+    }
+
+    async loadClientsForAutocomplete() {
+        try {
+            const resp = await fetch('api/clients.php', { credentials: 'same-origin' });
+            if (!resp.ok) throw new Error('Falha ao carregar clientes');
+            const data = await resp.json();
+            if (data && data.success) {
+                this.clients = data.data.map(client => ({
+                    id: client.id,
+                    nome: client.nome,
+                    telefone: client.telefone,
+                    email: client.email
+                }));
+                this.populateClientSelect(); // Popular o select após carregar os clientes
+            } else {
+                this.clients = [];
+            }
+        } catch (e) {
+            this.clients = [];
+            console.error('Erro ao carregar clientes para autocomplete:', e);
         }
     }
 
@@ -185,18 +226,22 @@ class Calendar {
                 dayElement.classList.add('other-month');
             }
             
+            const dayNumberHeader = document.createElement('div');
+            dayNumberHeader.className = 'day-number-header';
+
+            const dayNumberSpan = document.createElement('span');
+            dayNumberSpan.className = 'day-number';
+            dayNumberSpan.textContent = dayNumber;
+            dayNumberHeader.appendChild(dayNumberSpan);
+
             if (isToday) {
                 dayElement.classList.add('today');
+                const todayLabelSpan = document.createElement('span');
+                todayLabelSpan.className = 'today-label';
+                todayLabelSpan.textContent = 'Hoje';
+                dayNumberHeader.appendChild(todayLabelSpan);
             }
-
-            // Criar um container para o número do dia e a label "Hoje"
-            const dayHeaderContent = document.createElement('div');
-            dayHeaderContent.className = 'day-header-content';
-            dayHeaderContent.innerHTML = `<span class="day-number">${dayNumber}</span>`;
-            if (isToday) {
-                dayHeaderContent.innerHTML += `<span class="today-label">Hoje</span>`;
-            }
-            dayElement.appendChild(dayHeaderContent);
+            dayElement.appendChild(dayNumberHeader);
 
             // Adicionar eventos, se houver
             const dayEvents = this.getEventsForDate(dateString);
@@ -316,6 +361,9 @@ class Calendar {
         now.setHours(now.getHours() + 1);
         const timeString = now.toTimeString().slice(0, 5);
         modal.querySelector('#eventTime').value = timeString;
+        
+        // Popular select de clientes
+        this.populateClientSelect();
     }
 
     closeNewEventModal() {
@@ -329,6 +377,49 @@ class Calendar {
         const saveButton = document.getElementById('saveEvent');
         saveButton.textContent = 'Salvar Agendamento';
         saveButton.onclick = () => this.saveNewEvent();
+    }
+
+    populateClientSelect() {
+        const clientSelect = document.getElementById('clientName');
+        if (!clientSelect) return;
+
+        // Limpar opções existentes, exceto as duas primeiras (placeholder e "Adicionar Novo Cliente")
+        while (clientSelect.options.length > 2) {
+            clientSelect.remove(2);
+        }
+
+        this.clients.forEach(client => {
+            const option = document.createElement('option');
+            option.value = client.nome;
+            option.textContent = client.nome;
+            clientSelect.appendChild(option);
+        });
+        clientSelect.value = ''; // Reseta a seleção para o placeholder
+    }
+
+    handleClientSelection(selectedClientName) {
+        const modal = document.getElementById('newEventModal');
+        const clientPhoneInput = modal.querySelector('#clientPhone');
+        const clientEmailInput = modal.querySelector('#clientEmail');
+        
+        if (selectedClientName === 'new_client') {
+            // Redirecionar para a tela de clientes
+            window.location.href = 'cliente.php';
+            // Limpar os campos do agendamento para evitar preenchimento indesejado ao voltar
+            modal.querySelector('#newEventForm').reset();
+            this.closeNewEventModal();
+            return;
+        }
+
+        const client = this.clients.find(c => c.nome === selectedClientName);
+        if (client) {
+            clientPhoneInput.value = this.formatPhoneNumberForDisplay(client.telefone) || '';
+            clientEmailInput.value = client.email || '';
+        } else {
+            // Limpar campos se a opção selecionada não for um cliente válido
+            clientPhoneInput.value = '';
+            clientEmailInput.value = '';
+        }
     }
 
     async saveNewEvent(forceSave = false) {
@@ -418,9 +509,12 @@ class Calendar {
         const modal = document.getElementById('newEventModal');
         modal.classList.add('show');
 
+        // Popular select de clientes para garantir que esteja atualizado
+        this.populateClientSelect();
+
         // Preencher formulário com dados do evento (escopando pelo modal)
         modal.querySelector('#clientName').value = event.client;
-        modal.querySelector('#clientPhone').value = event.phone;
+        modal.querySelector('#clientPhone').value = this.formatPhoneNumberForDisplay(event.phone);
         modal.querySelector('#clientEmail').value = event.email || '';
         modal.querySelector('#serviceType').value = event.serviceType;
         modal.querySelector('#serviceDescription').value = event.serviceDescription || '';
@@ -649,7 +743,7 @@ class Calendar {
                     </div>
                     <div class="event-detail-body">
                         <p><strong>Horário:</strong> ${event.time} (Duração: ${event.duration} min)</p>
-                        <p><strong>Telefone:</strong> ${event.phone}</p>
+                        <p><strong>Telefone:</strong> ${this.formatPhoneNumberForDisplay(event.phone)}</p>
                         <p><strong>Email:</strong> ${event.email || 'Não informado'}</p>
                         <p><strong>Descrição:</strong> ${event.serviceDescription || 'Não informado'}</p>
                         <p><strong>Valor:</strong> R$ ${Number(event.value || 0).toFixed(2)}</p>
@@ -707,6 +801,18 @@ class Calendar {
         }
         return false; // Nenhum conflito
     }
+
+    formatPhoneNumberForDisplay(phoneNumber) {
+        if (!phoneNumber) return 'Não informado';
+        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{2})(\d{4,5})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phoneNumber;
+    }
+
+    // REMOVIDA: formatPhoneNumberInput(value) { ... }
 }
 
 // Adicionar estilos CSS para animações e botão de deletar
@@ -771,5 +877,5 @@ document.head.appendChild(style);
 // Inicializar o calendário quando a página carregar
 let calendar;
 document.addEventListener('DOMContentLoaded', () => {
-    calendar = new Calendar();
+    window.calendar = new Calendar(); // Atribuir a uma propriedade global
 });

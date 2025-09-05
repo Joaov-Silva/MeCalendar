@@ -72,6 +72,8 @@ const translations = {
         'confirmed': 'Confirmado',
         'pending': 'Pendente',
         'save_appointment': 'Salvar Agendamento',
+        'select_client': 'Selecione um cliente',
+        'add_new_client': 'Adicionar Novo Cliente...',
         
         // Clientes
         'manage_clients': 'Gerencie sua base de clientes',
@@ -94,6 +96,23 @@ const translations = {
         'conflict_warning_message': 'Este agendamento conflita com outro ou está muito próximo. Deseja salvar mesmo assim?',
         'fill_required_fields': 'Por favor, preencha todos os campos obrigatórios!',
         'negative_value_error': 'O valor do agendamento não pode ser negativo!',
+        'error_loading_clients': 'Erro ao carregar clientes.',
+        'error_loading_clients_generic': 'Erro ao carregar clientes. Tente novamente.',
+        'error_loading_client_details': 'Erro ao carregar detalhes do cliente.',
+        'error_editing_client': 'Erro ao carregar dados do cliente para edição.',
+        'error_deleting_client': 'Erro ao excluir cliente.',
+        'error_saving_client': 'Erro ao salvar cliente.',
+        
+        // Serviços (nova tela)
+        'services': 'Serviços',
+        'manage_active_appointments': 'Gerencie seus agendamentos ativos',
+        'no_active_appointments': 'Nenhum agendamento ativo encontrado.',
+        'actions': 'Ações',
+        'edit_appointment': 'Editar Agendamento',
+        'confirm_cancel_appointment': 'Tem certeza que deseja cancelar este agendamento?',
+        'appointment_cancelled_success': 'Agendamento cancelado com sucesso!',
+        'error_cancelling_appointment': 'Erro ao cancelar agendamento.',
+        'appointment_updated_success': 'Agendamento atualizado com sucesso!',
         
         // Relatórios
         'track_metrics': 'Acompanhe métricas e desempenho dos atendimentos',
@@ -223,6 +242,8 @@ const translations = {
         'confirmed': 'Confirmed',
         'pending': 'Pending',
         'save_appointment': 'Save Appointment',
+        'select_client': 'Select a client',
+        'add_new_client': 'Add New Client...',
         
         // Clients
         'manage_clients': 'Manage your client base',
@@ -245,6 +266,23 @@ const translations = {
         'conflict_warning_message': 'This appointment conflicts with another or is too close. Do you want to save anyway?',
         'fill_required_fields': 'Please fill in all required fields!',
         'negative_value_error': 'Appointment value cannot be negative!',
+        'error_loading_clients': 'Error loading clients.',
+        'error_loading_clients_generic': 'Error loading clients. Try again.',
+        'error_loading_client_details': 'Error loading client details.',
+        'error_editing_client': 'Error loading client data for editing.',
+        'error_deleting_client': 'Error deleting client.',
+        'error_saving_client': 'Error saving client.',
+        
+        // Services (new screen)
+        'services': 'Services',
+        'manage_active_appointments': 'Manage your active appointments',
+        'no_active_appointments': 'No active appointments found.',
+        'actions': 'Actions',
+        'edit_appointment': 'Edit Appointment',
+        'confirm_cancel_appointment': 'Are you sure you want to cancel this appointment?',
+        'appointment_cancelled_success': 'Appointment cancelled successfully!',
+        'error_cancelling_appointment': 'Error cancelling appointment.',
+        'appointment_updated_success': 'Appointment updated successfully!',
         
         // Reports
         'track_metrics': 'Track metrics and appointment performance',

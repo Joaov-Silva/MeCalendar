@@ -23,63 +23,7 @@ $currentUser = getCurrentUser();
 <body>
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <a href="index.php" class="logo">
-                    <div class="logo-icon"><i class="fas fa-calendar"></i></div>
-                    <span class="logo-text">MeCalendar</span>
-                </a>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <ul class="nav-list">
-                    <li class="nav-item">
-                        <a href="calendar.php" class="nav-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span data-translate="calendar">Calendário</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="cliente.php" class="nav-link active">
-                            <i class="fas fa-users"></i>
-                            <span data-translate="clients">Clientes</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="relatorios.php" class="nav-link">
-                            <i class="fas fa-chart-bar"></i>
-                            <span data-translate="reports">Relatórios</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="configuracoes.php" class="nav-link">
-                            <i class="fas fa-cog"></i>
-                            <span data-translate="settings">Configurações</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <!-- Botão Dark Mode -->
-            <div class="dark-mode-section">
-                <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
-                    <i class="fas fa-moon" id="darkModeIcon"></i>
-                    <span data-translate="dark_mode">Modo Escuro</span>
-                </button>
-            </div>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <span class="user-name"><?= htmlspecialchars($currentUser['nome']); ?></span>
-                        <span class="user-role" data-translate="owner">Proprietário</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
+        <?php include_once 'sidebar.php'; // Inclui a sidebar ?>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -234,27 +178,41 @@ $currentUser = getCurrentUser();
     <script src="dark-mode.js"></script>
     
     <script>
-        // Event listeners para modais
+        let clientsManager;
+
         document.addEventListener('DOMContentLoaded', function() {
+            clientsManager = new ClientsManager();
+            clientsManager.loadClients(); // Carregar clientes ao iniciar a página
+
+            // Botão Novo Cliente
+            document.getElementById('newClientBtn').addEventListener('click', () => {
+                clientsManager.openClientModal();
+            });
+
+            // Botão Salvar Cliente (no modal)
+            document.getElementById('saveClient').addEventListener('click', (e) => {
+                clientsManager.handleClientSubmit(e);
+            });
+
             // Fechar modais
-            document.getElementById('closeModal').addEventListener('click', () => closeModal('clientModal'));
-            document.getElementById('closeDetailsModal').addEventListener('click', () => closeModal('clientDetailsModal'));
-            document.getElementById('cancelClient').addEventListener('click', () => closeModal('clientModal'));
+            document.getElementById('closeModal').addEventListener('click', () => clientsManager.closeClientModal('clientModal'));
+            document.getElementById('closeDetailsModal').addEventListener('click', () => clientsManager.closeClientModal('clientDetailsModal'));
+            document.getElementById('cancelClient').addEventListener('click', () => clientsManager.closeClientModal('clientModal'));
             
             // Fechar modal ao clicar fora
             document.getElementById('clientModal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal('clientModal');
+                if (e.target === this) clientsManager.closeClientModal('clientModal');
             });
             document.getElementById('clientDetailsModal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal('clientDetailsModal');
+                if (e.target === this) clientsManager.closeClientModal('clientDetailsModal');
             });
             
             // Editar cliente do modal de detalhes
             document.getElementById('editClient').addEventListener('click', function() {
                 const clientId = this.dataset.clientId;
                 if (clientId) {
-                    editClient(clientId);
-                    closeModal('clientDetailsModal');
+                    clientsManager.editClient(parseInt(clientId));
+                    clientsManager.closeClientModal('clientDetailsModal');
                 }
             });
             
@@ -262,9 +220,17 @@ $currentUser = getCurrentUser();
             document.getElementById('deleteClient').addEventListener('click', function() {
                 const clientId = this.dataset.clientId;
                 if (clientId) {
-                    deleteClient(clientId);
-                    closeModal('clientDetailsModal');
+                    clientsManager.deleteClient(parseInt(clientId));
+                    clientsManager.closeClientModal('clientDetailsModal');
                 }
+            });
+
+            // Busca
+            document.getElementById('searchInput').addEventListener('keyup', (e) => {
+                clientsManager.filterClients(e.target.value);
+            });
+            document.querySelector('.search-btn').addEventListener('click', () => {
+                clientsManager.filterClients(document.getElementById('searchInput').value);
             });
         });
     </script>

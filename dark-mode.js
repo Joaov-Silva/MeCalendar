@@ -89,7 +89,9 @@ class DarkModeManager {
 
 // Inicializar quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
-    window.darkModeManager = new DarkModeManager();
+    if (!window.darkModeManager) {
+        window.darkModeManager = new DarkModeManager();
+    }
 });
 
 // Função global para alternar dark mode (para uso em outros scripts)
@@ -97,6 +99,7 @@ window.toggleDarkMode = function() {
     if (window.darkModeManager) {
         window.darkModeManager.toggleDarkMode();
     } else {
+        // Fallback: criar instância se ainda não existir (embora não deva acontecer com a verificação acima)
         window.darkModeManager = new DarkModeManager();
         window.darkModeManager.toggleDarkMode();
     }

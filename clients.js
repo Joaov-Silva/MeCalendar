@@ -1,52 +1,68 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const searchInput = document.getElementById('searchInput');
-    const clientsGrid = document.getElementById('clientsGrid');
-    const clientModal = document.getElementById('clientModal');
-    const clientForm = document.getElementById('clientForm');
-    const newClientBtn = document.getElementById('newClientBtn');
-    
-    // Load clients on page load
-    loadClients();
-
-    // Event Listeners
-    searchInput.addEventListener('input', debounce(searchClients, 300));
-    newClientBtn.addEventListener('click', () => showModal('clientModal'));
-    clientForm.addEventListener('submit', handleClientSubmit);
-
-    // Functions
-    function loadClients() {
-        fetch('api/clients.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    displayClients(data.data);
-                } else {
-                    showToast('Erro ao carregar clientes: ' + data.error, 'error');
-                }
-            })
-            .catch(error => showToast('Erro ao carregar clientes', 'error'));
+class ClientsManager {
+    constructor() {
+        this.clients = [];
+        this.currentUserId = (window && window.CURRENT_USER_ID) ? String(window.CURRENT_USER_ID) : 'guest';
+        
+        // DOM Elements
+        this.searchInput = document.getElementById('searchInput');
+        this.clientsGrid = document.getElementById('clientsGrid');
+        this.clientModal = document.getElementById('clientModal');
+        this.clientForm = document.getElementById('clientForm');
+        this.modalTitle = document.getElementById('modalTitle');
+        this.clientIdInput = document.getElementById('clientId');
+        
+        this.setupEventListeners();
     }
 
-    function displayClients(clients) {
-        clientsGrid.innerHTML = '';
+    setupEventListeners() {
+        // Event Listeners for search, new client, and form submission are already in cliente.php
+        // This class will be instantiated in cliente.php and those listeners will call methods here.
         
-        if (clients.length === 0) {
-            clientsGrid.innerHTML = `
+        // Adicionar listener para formatar telefone enquanto o usuário digita
+        const telefoneInput = document.getElementById('telefone');
+        if (telefoneInput) {
+            telefoneInput.addEventListener('input', (e) => {
+                e.target.value = this.formatPhoneNumberInput(e.target.value);
+            });
+        }
+    }
+
+    async loadClients() {
+        try {
+            const response = await fetch('api/clients.php', { credentials: 'same-origin' });
+            if (!response.ok) throw new Error('Falha ao carregar clientes');
+            const data = await response.json();
+            if (data.success) {
+                this.clients = data.data;
+                this.displayClients(this.clients);
+            } else {
+                this.showToast(translations[getCurrentLanguage()]['error_loading_clients'] || 'Erro ao carregar clientes: ' + data.error, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar clientes:', error);
+            this.showToast(translations[getCurrentLanguage()]['error_loading_clients_generic'] || 'Erro ao carregar clientes.', 'error');
+        }
+    }
+
+    displayClients(clientsToDisplay) {
+        this.clientsGrid.innerHTML = '';
+        
+        if (clientsToDisplay.length === 0) {
+            this.clientsGrid.innerHTML = `
                 <div class="no-results">
                     <i class="fas fa-users"></i>
-                    <p>Nenhum cliente encontrado</p>
+                    <p>${translations[getCurrentLanguage()]['no_clients_found'] || 'Nenhum cliente encontrado'}</p>
                 </div>`;
             return;
         }
 
-        clients.forEach(client => {
-            const card = createClientCard(client);
-            clientsGrid.appendChild(card);
+        clientsToDisplay.forEach(client => {
+            const card = this.createClientCard(client);
+            this.clientsGrid.appendChild(card);
         });
     }
 
-    function createClientCard(client) {
+    createClientCard(client) {
         const card = document.createElement('div');
         card.className = 'client-card';
         card.innerHTML = `
@@ -62,61 +78,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             <div class="client-details">
-                <p><i class="fas fa-phone"></i> ${client.telefone}</p>
+                <p><i class="fas fa-phone"></i> ${this.formatPhoneNumberForDisplay(client.telefone)}</p>
                 ${client.email ? `<p><i class="fas fa-envelope"></i> ${client.email}</p>` : ''}
                 ${client.endereco ? `<p><i class="fas fa-map-marker-alt"></i> ${client.endereco}</p>` : ''}
             </div>
             <div class="client-actions">
-                <button onclick="viewClient(${client.id})" class="btn btn-outline">
+                <button onclick="clientsManager.viewClient(${client.id})" class="btn btn-outline">
                     <i class="fas fa-eye"></i>
                 </button>
-                <button onclick="editClient(${client.id})" class="btn btn-outline">
+                <button onclick="clientsManager.editClient(${client.id})" class="btn btn-outline">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="deleteClient(${client.id})" class="btn btn-danger">
+                <button onclick="clientsManager.deleteClient(${client.id})" class="btn btn-danger">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
         `;
-        card.dataset.clientId = client.id; // Adiciona o ID ao card para acesso fácil
+        card.dataset.clientId = client.id;
         card.addEventListener('click', (e) => {
-            // Previne que o clique nos botões propague e abra os detalhes novamente
             if (e.target.closest('.client-actions button')) return;
-            viewClient(client);
+            this.viewClient(client.id); // Chamar viewClient com ID para buscar detalhes atualizados
         });
         return card;
     }
 
-    // Utility Functions
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
+    filterClients(searchTerm) {
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        const filteredClients = this.clients.filter(client => {
+            return client.nome.toLowerCase().includes(lowerCaseSearchTerm) ||
+                   client.telefone.toLowerCase().includes(lowerCaseSearchTerm) ||
+                   (client.email && client.email.toLowerCase().includes(lowerCaseSearchTerm));
+        });
+        this.displayClients(filteredClients);
     }
 
-    // CRUD Operations
-    async function handleClientSubmit(e) {
+    async handleClientSubmit(e) {
+        console.log('handleClientSubmit called');
         e.preventDefault();
-        const formData = new FormData(clientForm);
-        const clientId = formData.get('clientId');
+        const formData = new FormData(this.clientForm);
+        const clientId = this.clientIdInput.value;
         
         const data = {
             id: clientId || null,
             nome: formData.get('nome'),
             telefone: formData.get('telefone'),
             email: formData.get('email'),
-            data_nascimento: formData.get('dataNascimento'), // Corrigido para data_nascimento
+            data_nascimento: formData.get('dataNascimento'),
             endereco: formData.get('endereco'),
             observacoes: formData.get('observacoes'),
             status: formData.get('status')
         };
         
+        if (!data.nome || !data.telefone) {
+            this.showToast(translations[getCurrentLanguage()]['fill_required_fields'] || 'Por favor, preencha todos os campos obrigatórios.', 'error');
+            return;
+        }
+
         try {
             const response = await fetch('api/clients.php', {
                 method: clientId ? 'PUT' : 'POST',
@@ -129,136 +146,202 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             
             if (result.success) {
-                showToast(clientId ? translations[getCurrentLanguage()]['client_updated'] : translations[getCurrentLanguage()]['client_created'], 'success'); // Usando traduções
-                closeModal('clientModal');
-                loadClients();
+                this.showToast(clientId ? translations[getCurrentLanguage()]['client_updated'] : translations[getCurrentLanguage()]['client_created'], 'success');
+                this.closeClientModal('clientModal');
+                this.loadClients();
             } else {
-                throw new Error(result.error || 'Erro ao salvar cliente');
+                // Melhorar a mensagem de erro com tradução
+                const errorMessage = result.error || translations[getCurrentLanguage()]['error_saving_client'] || 'Erro ao salvar cliente';
+                throw new Error(errorMessage);
             }
         } catch (error) {
-            showToast(error.message, 'error');
+            this.showToast(error.message, 'error');
         }
     }
-});
 
-// Global Functions for Card Actions
-// As funções globais viewClient, editClient e deleteClient agora recebem o objeto client ou ID diretamente
-function viewClient(client) {
-    showClientDetails(client);
-}
-
-async function editClient(id) {
-    try {
-        const response = await fetch(`api/clients.php?id=${id}`); // Fetch individual client
-        const data = await response.json();
-        if (data.success && data.data) {
-            fillClientForm(data.data);
-            document.getElementById('modalTitle').textContent = translations[getCurrentLanguage()]['edit_client']; // Título de edição
-            showModal('clientModal');
-        } else {
-            throw new Error(data.error || 'Cliente não encontrado');
-        }
-    } catch (error) {
-        showToast(error.message, 'error');
-    }
-}
-
-async function deleteClient(id) {
-    if (confirm(translations[getCurrentLanguage()]['confirm_delete_client'] || 'Tem certeza que deseja excluir este cliente?')) {
+    async viewClient(id) {
         try {
-            const response = await fetch('api/clients.php', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: id })
-            });
+            const response = await fetch(`api/clients.php?id=${id}`, { credentials: 'same-origin' });
+            if (!response.ok) throw new Error('Falha ao carregar detalhes do cliente');
             const data = await response.json();
-            if (data.success) {
-                showToast(translations[getCurrentLanguage()]['client_deleted'], 'success'); // Usando traduções
-                loadClients();
-                closeModal('clientDetailsModal'); // Fecha o modal de detalhes após exclusão
+            if (data.success && data.data) {
+                this.showClientDetails(data.data);
             } else {
-                throw new Error(data.error || 'Erro ao excluir cliente');
+                throw new Error(data.error || 'Cliente não encontrado');
             }
         } catch (error) {
-            showToast(error.message, 'error');
+            console.error('Erro ao buscar detalhes do cliente:', error);
+            this.showToast(translations[getCurrentLanguage()]['error_loading_client_details'] || 'Erro ao carregar detalhes do cliente.', 'error');
         }
     }
-}
 
-function showClientDetails(client) {
-    document.getElementById('detailsNome').textContent = client.nome;
-    document.getElementById('detailsTelefone').textContent = client.telefone;
-    document.getElementById('detailsEmail').textContent = client.email || 'Não informado';
-    document.getElementById('detailsEndereco').textContent = client.endereco || 'Não informado';
-    document.getElementById('detailsDataNascimento').textContent = formatDateForDisplay(client.data_nascimento) || 'Não informado';
-    document.getElementById('detailsObservacoes').textContent = client.observacoes || 'Nenhuma observação';
-    
-    const statusBadge = document.getElementById('detailsStatus');
-    statusBadge.textContent = client.status.charAt(0).toUpperCase() + client.status.slice(1);
-    statusBadge.className = `status-badge ${client.status}`;
-    
-    document.getElementById('clientAvatar').textContent = client.nome.charAt(0).toUpperCase();
-    
-    // Define os data attributes para os botões
-    document.getElementById('editClient').dataset.clientId = client.id;
-    document.getElementById('deleteClient').dataset.clientId = client.id;
-    
-    showModal('clientDetailsModal');
-}
+    async editClient(id) {
+        try {
+            const response = await fetch(`api/clients.php?id=${id}`, { credentials: 'same-origin' });
+            if (!response.ok) throw new Error('Falha ao carregar cliente para edição');
+            const data = await response.json();
+            if (data.success && data.data) {
+                this.fillClientForm(data.data);
+                this.modalTitle.textContent = translations[getCurrentLanguage()]['edit_client'] || 'Editar Cliente';
+                this.openClientModal();
+            } else {
+                throw new Error(data.error || 'Cliente não encontrado para edição');
+            }
+        } catch (error) {
+            console.error('Erro ao editar cliente:', error);
+            this.showToast(translations[getCurrentLanguage()]['error_editing_client'] || 'Erro ao carregar dados do cliente para edição.', 'error');
+        }
+    }
 
-function fillClientForm(client) {
-    document.getElementById('clientId').value = client.id;
-    document.getElementById('nome').value = client.nome;
-    document.getElementById('telefone').value = client.telefone;
-    document.getElementById('email').value = client.email || '';
-    document.getElementById('dataNascimento').value = client.data_nascimento || ''; // Corrigido para data_nascimento
-    document.getElementById('endereco').value = client.endereco || '';
-    document.getElementById('observacoes').value = client.observacoes || '';
-    document.getElementById('status').value = client.status;
-    
-    document.getElementById('modalTitle').textContent = translations[getCurrentLanguage()]['edit_client']; // Usando traduções
-}
+    async deleteClient(id) {
+        if (confirm(translations[getCurrentLanguage()]['confirm_delete_client'] || 'Tem certeza que deseja excluir este cliente?')) {
+            try {
+                const response = await fetch('api/clients.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    this.showToast(translations[getCurrentLanguage()]['client_deleted'], 'success');
+                    this.closeClientModal('clientDetailsModal');
+                    this.loadClients();
+                } else {
+                    // Melhorar a mensagem de erro com tradução
+                    const errorMessage = data.error || translations[getCurrentLanguage()]['error_deleting_client'] || 'Erro ao excluir cliente';
+                    throw new Error(errorMessage);
+                }
+            } catch (error) {
+                console.error('Erro ao deletar cliente:', error);
+                this.showToast(error.message, 'error');
+            }
+        }
+    }
 
-// Funções de modal e toast (mover para o topo do arquivo ou em um utilitário se usadas em mais lugares)
-// Já existem em cliente.php. Preciso garantir que não haverá duplicidade ou que a versão correta será usada.
-// Para evitar conflito, vou definir estas funções como globais aqui, e o script em cliente.php pode utilizá-las.
+    showClientDetails(client) {
+        const detailsModal = document.getElementById('clientDetailsModal');
+        detailsModal.querySelector('#detailsNome').textContent = client.nome;
+        detailsModal.querySelector('#detailsTelefone').textContent = this.formatPhoneNumberForDisplay(client.telefone);
+        detailsModal.querySelector('#detailsEmail').textContent = client.email || 'Não informado';
+        detailsModal.querySelector('#detailsEndereco').textContent = client.endereco || 'Não informado';
+        detailsModal.querySelector('#detailsDataNascimento').textContent = this.formatDateForDisplay(client.data_nascimento) || 'Não informado';
+        detailsModal.querySelector('#detailsObservacoes').textContent = client.observacoes || 'Nenhuma observação';
+        
+        const statusBadge = detailsModal.querySelector('#detailsStatus');
+        statusBadge.textContent = client.status.charAt(0).toUpperCase() + client.status.slice(1);
+        statusBadge.className = `status-badge ${client.status}`;
+        
+        detailsModal.querySelector('#clientAvatar').textContent = client.nome.charAt(0).toUpperCase();
+        
+        // Define os data attributes para os botões de ação do modal de detalhes
+        detailsModal.querySelector('#editClient').dataset.clientId = client.id;
+        detailsModal.querySelector('#deleteClient').dataset.clientId = client.id;
+        
+        this.openClientModal('clientDetailsModal'); // Abre o modal de detalhes
+    }
 
-function showModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-}
+    fillClientForm(client) {
+        this.clientIdInput.value = client.id;
+        this.clientForm.querySelector('#nome').value = client.nome;
+        this.clientForm.querySelector('#telefone').value = client.telefone;
+        this.clientForm.querySelector('#email').value = client.email || '';
+        this.clientForm.querySelector('#dataNascimento').value = client.data_nascimento || '';
+        this.clientForm.querySelector('#endereco').value = client.endereco || '';
+        this.clientForm.querySelector('#observacoes').value = client.observacoes || '';
+        this.clientForm.querySelector('#status').value = client.status;
+    }
 
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-    if (modalId === 'clientModal') {
-        document.getElementById('clientForm').reset();
-        document.getElementById('clientId').value = '';
-        document.getElementById('modalTitle').textContent = translations[getCurrentLanguage()]['new_client']; // Usando traduções
+    openClientModal(modalId = 'clientModal') {
+        const modal = document.getElementById(modalId);
+        modal.classList.add('show');
+        if (modalId === 'clientModal') {
+            this.clientForm.reset();
+            this.clientIdInput.value = '';
+            this.modalTitle.textContent = translations[getCurrentLanguage()]['new_client'] || 'Novo Cliente';
+        }
+    }
+
+    closeClientModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('show');
+        if (modalId === 'clientModal') {
+            this.clientForm.reset();
+            this.clientIdInput.value = '';
+            this.modalTitle.textContent = translations[getCurrentLanguage()]['new_client'] || 'Novo Cliente';
+        }
+    }
+
+    showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    formatDateForDisplay(dateString) {
+        if (!dateString) return 'Não informado';
+        const [year, month, day] = dateString.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        return `${d}/${m}/${y}`;
+    }
+
+    formatPhoneNumberForDisplay(phoneNumber) {
+        if (!phoneNumber) return 'Não informado';
+        // Remove tudo que não for dígito
+        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        
+        // Aplica a máscara (XX) XXXX-XXXX ou (XX) XXXXX-XXXX
+        const match = cleaned.match(/^(\d{2})(\d{4,5})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phoneNumber; // Retorna o número original se não conseguir formatar
+    }
+
+    formatPhoneNumberInput(value) {
+        if (!value) return '';
+        const cleaned = value.replace(/\D/g, ''); // Remove tudo que não for dígito
+        let formatted = '';
+        
+        if (cleaned.length > 0) {
+            formatted += `(${cleaned.substring(0, 2)}`;
+        }
+        if (cleaned.length > 2) {
+            formatted += `) ${cleaned.substring(2, 7)}`;
+        }
+        if (cleaned.length > 7) {
+            formatted += `-${cleaned.substring(7, 11)}`;
+        }
+        return formatted;
     }
 }
 
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = `toast ${type}`;
-    toast.style.display = 'block';
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 3000);
+// Initialize ClientsManager in cliente.php instead of here
+
+// Utility function (debounce) - pode ser mantida fora da classe ou movida para um arquivo de utilitários
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
-// Adicionar função de formatação de data para display, se não existir globalmente
-// (poderia vir de translations.js ou utilitários)
-function formatDateForDisplay(dateString) {
-    if (!dateString) return 'Não informado';
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
-    const d = String(date.getDate()).padStart(2, '0');
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const y = date.getFullYear();
-    return `${d}/${m}/${y}`;
-}
 
-// Adicionar traduções para `edit_client` e `confirm_delete_client` no translations.js
-// (isso será feito no próximo passo, se necessário)
+document.addEventListener('DOMContentLoaded', function() {
+    // Certifica-se que ClientsManager está disponível globalmente após ser instanciado em cliente.php
+    // A instância 'clientsManager' já é criada e configurada em cliente.php
+    // Portanto, não precisamos recriá-la aqui.
+});

@@ -24,67 +24,7 @@ $currentUser = getCurrentUser();
 <body>
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <a href="index.php" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
-                        <div class="logo-icon">
-                            <i class="fas fa-calendar"></i>
-                        </div>
-                        <span class="logo-text">MeCalendar</span>
-                    </a>
-                </div>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <ul class="nav-list">
-                    <li class="nav-item">
-                        <a href="calendar.php" class="nav-link active">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span data-translate="calendar">Calendário</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="cliente.php" class="nav-link">
-                            <i class="fas fa-users"></i>
-                            <span data-translate="clients">Clientes</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="relatorios.php" class="nav-link">
-                            <i class="fas fa-chart-bar"></i>
-                            <span data-translate="reports">Relatórios</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="configuracoes.php" class="nav-link">
-                            <i class="fas fa-cog"></i>
-                            <span data-translate="settings">Configurações</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
-            <!-- Botão Dark Mode -->
-            <div class="dark-mode-section">
-                <button class="dark-mode-btn" id="darkModeBtn" title="Alternar modo escuro">
-                    <i class="fas fa-moon" id="darkModeIcon"></i>
-                    <span data-translate="dark_mode">Modo Escuro</span>
-                </button>
-            </div>
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <span class="user-name"><?php echo htmlspecialchars($currentUser['nome']); ?></span>
-                        <span class="user-role" data-translate="owner">Proprietário</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
+        <?php include_once 'sidebar.php'; // Inclui a sidebar ?>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -217,7 +157,10 @@ $currentUser = getCurrentUser();
                 <form id="newEventForm">
                     <div class="form-group">
                         <label for="clientName" data-translate="client_name">Nome do Cliente *</label>
-                        <input type="text" id="clientName" name="clientName" required>
+                        <select id="clientName" name="clientName" required>
+                            <option value="" disabled selected data-translate="select_client">Selecione um cliente</option>
+                            <option value="new_client" data-translate="add_new_client">Adicionar Novo Cliente...</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="clientPhone" data-translate="client_phone">Telefone *</label>

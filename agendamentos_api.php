@@ -27,8 +27,19 @@ foreach ($_POST as $k => $v) { $input[$k] = $v; }
 
 try {
     if ($method === 'GET') {
-        $stmt = $pdo->prepare('SELECT * FROM agendamento_front WHERE owner_user_id = ? ORDER BY date, time');
-        $stmt->execute([$currentUserId]);
+        $statusFilter = $_GET['status'] ?? null;
+        $sql = 'SELECT * FROM agendamento_front WHERE owner_user_id = ?';
+        $params = [$currentUserId];
+
+        if ($statusFilter && $statusFilter === 'active') {
+            $sql .= ' AND status != ?';
+            $params[] = 'cancelled';
+        }
+        // Adicionar ordenação padrão
+        $sql .= ' ORDER BY date DESC, time DESC';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'data' => $rows]);
         exit;
@@ -96,16 +107,26 @@ try {
 
             case 'delete':
                 $id = (int)($input['id'] ?? 0);
-                if ($id <= 0) { throw new Exception('ID inválido'); }
+                error_log("API: Tentativa de cancelar agendamento com ID: " . $id);
+                if ($id <= 0) { 
+                    error_log("API: Erro ao cancelar agendamento: ID inválido");
+                    throw new Exception('ID inválido'); 
+                }
                 // Verifica propriedade
                 $chk = $pdo->prepare('SELECT owner_user_id FROM agendamento_front WHERE id = ?');
                 $chk->execute([$id]);
                 $own = $chk->fetchColumn();
-                if (!$own || (int)$own !== $currentUserId) { http_response_code(403); echo json_encode(['success'=>false,'error'=>'Sem permissão']); exit; }
+                if (!$own || (int)$own !== $currentUserId) {
+                    error_log("API: Erro de permissão ao cancelar agendamento ID " . $id . " para user " . $currentUserId);
+                    http_response_code(403); 
+                    echo json_encode(['success'=>false,'error'=>'Sem permissão']); 
+                    exit; 
+                }
                 
                 // Altera o status para 'cancelled' em vez de deletar o registro
                 $stmt = $pdo->prepare('UPDATE agendamento_front SET status = ? WHERE id = ? AND owner_user_id = ?');
                 $stmt->execute(['cancelled', $id, $currentUserId]);
+                error_log("API: Agendamento ID " . $id . " cancelado com sucesso.");
                 echo json_encode(['success' => true]);
                 exit;
         }
