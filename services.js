@@ -131,7 +131,6 @@ class ServicesManager {
 
     openEditServiceModal(service) {
         console.log('openEditServiceModal chamado para:', service);
-        this.showNotification(`Funcionalidade de edição para ${service.client} em desenvolvimento.`, 'info');
 
         // Aqui, precisamos abrir o modal de edição de agendamento (modal_edit_appointment.php)
         const modal = document.getElementById('editAppointmentModal');

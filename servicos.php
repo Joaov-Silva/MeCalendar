@@ -67,6 +67,7 @@ $currentUser = getCurrentUser();
         window.CURRENT_USER_ID = <?php echo json_encode($currentUser['id_usuario']); ?>;
     </script>
     <script src="translations.js"></script>
+    <script src="calendar.js"></script>
     <script src="services.js"></script>
 </body>
 </html>

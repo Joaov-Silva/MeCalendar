@@ -87,17 +87,20 @@
 		if (saveBtn) saveBtn.addEventListener('click', async () => {
 			const name = nameInp?.value?.trim() || '';
 			const email = emailInp?.value?.trim() || '';
-			if (!name || !email) { alert('Preencha nome e email.'); return; }
+			if (!name || !email) {
+				window.calendar?.showNotification(window.t('fill_name_email'), 'error'); // Usar a tradução para a mensagem de erro
+				return;
+			}
 			try {
 				const updated = await saveAccountRemote(name, email);
 				saveSettings({ name: updated.name, email: updated.email });
 				const headerName = document.querySelector('.user-name');
 				if (headerName) headerName.textContent = updated.name;
-				alert('Dados salvos no servidor com sucesso.');
+				window.calendar?.showNotification(window.t('data_saved_successfully'), 'success'); // Usar a tradução para a mensagem de sucesso
 			} catch (e) {
 				// Fallback: persiste local
 				saveSettings({ name, email });
-				alert('Falha ao salvar no servidor: ' + (e?.message || e) + '\nAs alterações foram salvas localmente.');
+				window.calendar?.showNotification('Falha ao salvar no servidor: ' + (e?.message || e) + '\nAs alterações foram salvas localmente.', 'error');
 			}
 		});
 	});

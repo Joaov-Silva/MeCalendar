@@ -89,6 +89,7 @@ $currentUser = getCurrentUser();
 	</div>
 
 	<script src="translations.js"></script>
+	<script src="calendar.js"></script>
 	<script src="settings.js"></script>
 </body>
 </html>
