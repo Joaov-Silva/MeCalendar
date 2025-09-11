@@ -126,18 +126,6 @@ $currentUser = getCurrentUser();
                         </div>
                     </div>
                     <div class="event-actions">
-                        <button class="btn btn-outline">
-                            <i class="fas fa-edit"></i>
-                            Editar
-                        </button>
-                        <button class="btn btn-outline">
-                            <i class="fas fa-phone"></i>
-                            Ligar
-                        </button>
-                        <button class="btn btn-danger">
-                            <i class="fas fa-trash"></i>
-                            Cancelar
-                        </button>
                     </div>
                 </div>
             </div>

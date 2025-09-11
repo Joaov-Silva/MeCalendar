@@ -749,15 +749,7 @@ class Calendar {
                         <p><strong>Notas:</strong> ${event.notes || 'Nenhuma observação'}</p>
                     </div>
                     <div class="event-detail-actions">
-                        <button class="btn btn-sm btn-outline" onclick="calendar.editEvent(${event.id})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-outline" onclick="calendar.callClient('${event.phone}')">
-                            <i class="fas fa-phone"></i> Ligar
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="calendar.deleteEvent(${event.id})">
-                            <i class="fas fa-trash"></i> Cancelar
-                        </button>
+                        
                     </div>
                 `;
                 panelContent.appendChild(eventDetailElement);

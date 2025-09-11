@@ -24,9 +24,6 @@ require_once 'config.php';
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <div class="badge" data-translate="new_feature">
-                    ✨ Novo: Sistema de lembretes automáticos
-                </div>
                 <h1 class="hero-title">
                     <span data-translate="organize_schedule">Organize sua agenda</span>
                     <span class="hero-title-highlight" data-translate="with_ease">com facilidade</span>

@@ -49,10 +49,6 @@ $isAuthPage = in_array(basename($_SERVER['PHP_SELF']), ['login.php', 'cadastro.p
                             </div>
                             
                             <div class="dropdown-menu">
-                                <a href="#" class="dropdown-item" onclick="alert('Funcionalidade de perfil será implementada em breve!')">
-                                    <i class="fas fa-user-circle"></i>
-                                    Meu Perfil
-                                </a>
                                 <a href="calendar.php" class="dropdown-item">
                                     <i class="fas fa-calendar-check"></i>
                                     Meus Agendamentos

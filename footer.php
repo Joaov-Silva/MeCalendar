@@ -27,7 +27,7 @@
                 <ul class="footer-links">
                     <li><a href="#">Sobre o Projeto</a></li>
                     <li><a href="#">Tecnologias</a></li>
-                    <li><a href="#">GitHub</a></li>
+                    <li><a href="https://github.com/Joaov-Silva/MeCalendar.git" target="_blank">GitHub</a></li>
                     <li><a href="#">Contato</a></li>
                 </ul>
             </div>
